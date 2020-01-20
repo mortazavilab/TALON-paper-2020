@@ -11,11 +11,11 @@ cat <(samtools view -H /share/crsp/lab/seyedam/share/TALON_paper_data/revisions_
 
 2. Is there much multimapping going on, or was that minimal?
 ```
-awk '{if($2 != '0' && $2 != '16') print $0}' PacBio_Sequel2_GM12878_R1_SIRV_reads.sam | wc -l
+samtools view PacBio_Sequel2_GM12878_R1_SIRV_reads.sam | awk '{if($2 != '0' && $2 != '16') print $0}' | wc -l
 
-awk '{if($2 != '0' && $2 != '16') print $0}' PacBio_Sequel2_GM12878_R2_SIRV_reads.sam | wc -l
+samtools view PacBio_Sequel2_GM12878_R2_SIRV_reads.sam | awk '{if($2 != '0' && $2 != '16') print $0}' | wc -l
 ```
-For Rep1, only 4.4% of the alignments in the file are non-primary. In Rep2, 2.2% of the alignments were non-primary. So overall, this does not seem like a big deal (although I'm curious why Rep1 had almost twice the rate of Rep2).
+For Rep1, only 4 out of 6,924 alignments in the file are non-primary. In Rep2, 9 out of 13,821 alignments were non-primary. So overall, this does not seem like a big deal at all.
 
 3. Profile the sequence errors in the SIRVs using Dry Run mode in TranscriptClean
 ```
