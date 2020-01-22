@@ -7,13 +7,13 @@
 #$ -cwd
 #$ -j y
 
-sewt -e
+set -e
 module load dwyman/anaconda/3
 source activate TALON-v4.4.2
 
 DATE=$(date +%F\(%a\) | awk -F"(" '{print $1}')
 time talon_initialize_database \
-    --f /share/crsp/lab/seyedam/share/PACBIO/genomes/SIRV/SIRV-spikein.gtf \
+    --f ../../refs/SIRV_ERCC/SIRV-spikein_gene-sep_reformatted.gtf \
     --g SIRV \
     --a SIRV \
     --l 0 \
