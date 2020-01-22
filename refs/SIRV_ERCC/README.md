@@ -1,5 +1,5 @@
 # SIRVs
-## Download the SIRV set that out lab uses from Lexogen
+## Download the SIRV set that our lab uses from Lexogen
 ```
 wget https://www.lexogen.com/wp-content/uploads/2018/08/SIRV_Set3_Sequences_170612a-ZIP.zip
 unzip SIRV_Set3_Sequences_170612a-ZIP.zip
