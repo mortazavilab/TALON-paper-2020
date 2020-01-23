@@ -27,8 +27,24 @@ time talon --f config.csv \
            --build SIRV --cov 0.9 --identity 0.8 \
            --o SIRV
 
+# Unfiltered abundance file
 time talon_abundance \
     --db SIRV_${DATE}.db \
+    -a SIRV \
+    -b SIRV \
+    --o SIRV
+
+# Make whitelist
+talon_filter_transcripts \
+    --db SIRV_${DATE}.db \
+    -a SIRV \
+    -p pairings.csv \
+    --o SIRV_whitelist.csv
+
+# Filter abundance
+time talon_abundance \
+    --db SIRV_${DATE}.db \
+    --w SIRV_whitelist.csv \
     -a SIRV \
     -b SIRV \
     --o SIRV
