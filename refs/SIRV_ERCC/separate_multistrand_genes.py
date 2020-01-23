@@ -47,6 +47,20 @@ def main():
     gtf['gene_id'] = gtf.gene_id + ['.']*len(gtf) + gtf["subgene"].map(str)
     gtf['transcript_id'] = gtf.gene_id + ['-']*len(gtf) + gtf["transcript_id"]
 
+    # For minus-strand transcripts, sort the exons in reverse
+    transcript_tab = gtf[['transcript_id', 'strand']].drop_duplicates() 
+    sorted_gtf = pd.DataFrame(columns=gtf.columns)
+    for index, row in transcript_tab.iterrows():
+        if row['strand'] == '+':
+            sorted_rows = gtf.loc[gtf.transcript_id == row['transcript_id']].sort_values(
+                          by=['transcript_id','start', 'end'], ascending=True)
+            sorted_gtf = pd.concat([sorted_gtf, sorted_rows])
+        if row['strand'] == '-':
+            sorted_rows = gtf.loc[gtf.transcript_id == row['transcript_id']].sort_values(
+                          by=['transcript_id','start', 'end'], ascending=False)
+            sorted_gtf = pd.concat([sorted_gtf, sorted_rows])
+    gtf = sorted_gtf
+
     # Write to file
     description = []
     for index, row in gtf.iterrows():
