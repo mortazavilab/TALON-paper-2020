@@ -49,7 +49,10 @@ def compute_frac_As(seq=str):
 
     a = seq.count('A')
     n = len(seq)
-    return float(a)/n
+    if n == 0:
+        return 0
+    else:
+        return float(a)/n
 
 def fetch_range_after_transcript(transcript_end=int, strand=str, length=int):
     """ Given the 1-based stop position of a transcript and its strand,
@@ -108,12 +111,13 @@ def main(options):
     frac_A_outfile = options.outprefix + "_fraction_As_%dbp_after_transcript.tsv" \
                      % (options.fracA_range_size)
     o_afrac = open(frac_A_outfile, 'w')
-    o_afrac.write("\t".join(["read_id", "fraction_As"]) + '\n')
+    o_afrac.write("\t".join(["read_name", "fraction_As"]) + '\n')
     with pysam.AlignmentFile(options.sam_file) as sam:
         for record in sam:  # type: pysam.AlignedSegment
             if record.is_secondary == True or record.is_unmapped == True:
                 continue
             read_id = record.query_name
+            print(read_id)
             chrom = record.reference_name
             strand = "-" if record.is_reverse else "+"
             transcript_end = compute_transcript_end(record)
