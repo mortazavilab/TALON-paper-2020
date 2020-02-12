@@ -13,9 +13,6 @@ main <-function() {
     datasets <- unlist(strsplit(datasets, ","))
     abundance_table <- abundance_table[,c("transcript_ID", "transcript_novelty", datasets)]
 
-    # Remove genomic transcripts
-    abundance_table <- subset(abundance_table, transcript_novelty != "Genomic")
-
     # Remove transcripts if they do not appear in any of the datasets
     if(length(datasets) > 1) {
         abundance_table$total <- rowSums(abundance_table[,datasets])
@@ -24,17 +21,18 @@ main <-function() {
     }
     abundance_table <- subset(abundance_table, total > 0)
     abundance_table$total <- NULL
+
     # Plot
-    plot_novelty_on_reads(abundance_table, outdir, datasets)
+    plot_novelty_on_reads(abundance_table, outdir, datasets, opt$ymax)
 }
 
-plot_novelty_on_reads <- function(observed_transcripts, outdir, datasets){
+plot_novelty_on_reads <- function(observed_transcripts, outdir, datasets, ymax){
     # This function plots the number of reads per dataset that got assigned to
     # each novelty type.
 
     observed_transcripts$novelty <- factor(observed_transcripts$transcript_novelty,
                                              levels = c("Known", "ISM", "NIC", "NNC",
-                                             "Antisense", "Intergenic"))
+                                             "Antisense", "Intergenic", "Genomic"))
     observed_transcripts <- gather(observed_transcripts, dataset, reads, datasets)
     observed_transcripts <- suppressMessages(expandRows(observed_transcripts, 
                                              "reads", count.is.col = TRUE, 
@@ -56,8 +54,13 @@ plot_novelty_on_reads <- function(observed_transcripts, outdir, datasets){
     ylabel <- "Read count"
     colors <- c("Known" = "#009E73","ISM" = "#0072B2", "NIC" = "#D55E00",
                 "NNC" = "#E69F00", "Antisense" = "#000000",
-                "Intergenic" = "#CC79A7")
-    ymax <- 0.9*nrow(observed_transcripts)
+                "Intergenic" = "#CC79A7", "Genomic" = "#F0E442")
+
+    if (is.null(ymax)) {
+        ymax <- 0.9*nrow(observed_transcripts)
+    } else {
+        ymax <- as.numeric(ymax)
+    }
 
     n_datasets <- length(unique(observed_transcripts$dataset))
     png(filename = fname,
@@ -113,6 +116,8 @@ parse_options <- function() {
                     default = NULL, help = "Filtered TALON abundance file"),
         make_option(c("--datasets"), action = "store", dest = "datasets",
                     default = NULL, help = "Comma-separated list of datasets to include"),
+        make_option(c("--ymax"), action = "store", dest = "ymax",
+                    default = NULL, help = "Optional: max value for y axis."),
         make_option(c("-o","--outdir"), action = "store", dest = "outdir",
                     default = NULL, help = "Output directory for plots and outfiles")
         )
