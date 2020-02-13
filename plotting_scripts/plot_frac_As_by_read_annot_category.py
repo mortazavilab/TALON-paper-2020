@@ -46,7 +46,7 @@ def main():
 
     g = sns.FacetGrid(data, col="transcript_novelty", hue = "transcript_novelty",
                       palette = novelty_colors, hue_order = cat_order)
-    g = g.map(sns.distplot, "percent_As")
+    g = g.map(sns.distplot, "percent_As")#, kde=False)
     g.set_ylabels('Density')
     g.set_xlabels('Percent As after read end (10 bp)')
 

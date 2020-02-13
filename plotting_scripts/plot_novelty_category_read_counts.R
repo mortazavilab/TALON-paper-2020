@@ -23,10 +23,11 @@ main <-function() {
     abundance_table$total <- NULL
 
     # Plot
-    plot_novelty_on_reads(abundance_table, outdir, datasets, opt$ymax)
+    plot_novelty_on_reads(abundance_table, outdir, datasets, opt$ymax, opt$show_legend)
 }
 
-plot_novelty_on_reads <- function(observed_transcripts, outdir, datasets, ymax){
+plot_novelty_on_reads <- function(observed_transcripts, outdir, datasets, ymax,
+                                  show_legend){
     # This function plots the number of reads per dataset that got assigned to
     # each novelty type.
 
@@ -91,10 +92,11 @@ plot_novelty_on_reads <- function(observed_transcripts, outdir, datasets, ymax){
                   label = paste0(percent, '%')), 
                   stat = 'count', 
                   position = position_dodge(.9), 
-                  size = rel(7.5), vjust=-0.25) +
-                guides(fill = FALSE)
-
-
+                  size = rel(7.5), vjust=-0.25)
+    if (show_legend == F) {
+        g = g + guides(fill = F)
+    }
+    print(nrow(observed_transcripts))
     print(g)
     dev.off()
      
@@ -118,6 +120,8 @@ parse_options <- function() {
                     default = NULL, help = "Comma-separated list of datasets to include"),
         make_option(c("--ymax"), action = "store", dest = "ymax",
                     default = NULL, help = "Optional: max value for y axis."),
+        make_option(c("--legend"), action = "store_true", dest = "show_legend",
+                    default = F, help = "Optional: display legend"),
         make_option(c("-o","--outdir"), action = "store", dest = "outdir",
                     default = NULL, help = "Output directory for plots and outfiles")
         )

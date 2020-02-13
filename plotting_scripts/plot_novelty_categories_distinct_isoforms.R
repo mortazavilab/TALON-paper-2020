@@ -14,9 +14,6 @@ main <-function() {
     print(datasets)
     abundance_table <- abundance_table[,c("transcript_novelty", datasets)]
     
-    # Remove genomic transcripts
-    abundance_table <- subset(abundance_table, transcript_novelty != "Genomic")  
-
     # Remove transcripts if they do not appear in any of the datasets
     if(length(datasets) > 1) {
         abundance_table$total <- rowSums(abundance_table[,datasets])
@@ -26,17 +23,18 @@ main <-function() {
     abundance_table <- subset(abundance_table, total > 0) 
 
     # Plot
-    plot_distinct_novelty(abundance_table, outdir, datasets)
+    plot_distinct_novelty(abundance_table, outdir, datasets, opt$ymax)
 }
 
-plot_distinct_novelty <- function(distinct_transcripts, outdir, datasets){
+plot_distinct_novelty <- function(distinct_transcripts, outdir, datasets, ymax){
     # This function plots the number of transcripts that belong to each 
     # transcript novelty class. So it amounts to the number of unique transcripts
     # of each type that were identified in the datasets together
 
     distinct_transcripts$novelty <- factor(distinct_transcripts$transcript_novelty,
                                            levels = c("Known", "ISM", "NIC", "NNC",
-                                                      "Antisense", "Intergenic"))
+                                                      "Antisense", "Intergenic",
+                                                      "Genomic"))
 
     total <- nrow(distinct_transcripts)
 
@@ -53,15 +51,20 @@ plot_distinct_novelty <- function(distinct_transcripts, outdir, datasets){
     xlabel <- "Category"
     ylabel <- "Number of distinct transcript models"
     #ymax = 10^4.6
-    ymax <- 1.35*(max((distinct_transcripts %>% group_by(novelty) %>% count())$n))
+    if (is.null(ymax)) {
+        ymax <- 1.35*(max((distinct_transcripts %>% group_by(novelty) %>% count())$n))
+    } else {
+        ymax <- as.numeric(ymax)
+    }
 
     colors <- c("Known" = "#009E73","ISM" = "#0072B2", "NIC" = "#D55E00", 
                 "NNC" = "#E69F00", "Antisense" = "#000000", 
-                "Intergenic" = "#CC79A7")
+                "Intergenic" = "#CC79A7", "Genomic" = "#F0E442")
 
     png(filename = fname,
         width = 3100, height = 3500, units = "px",
         bg = "white",  res = 300)
+    total_isoforms = nrow(distinct_transcripts)
     g = ggplot(distinct_transcripts, aes(x = novelty, width=.6,
                fill = novelty)) + 
                geom_bar() + 
@@ -82,12 +85,15 @@ plot_distinct_novelty <- function(distinct_transcripts, outdir, datasets){
                   label = paste0(percent, '%')),
                   stat = 'count',
                   position = position_dodge(.9),
-                  size = rel(11), vjust=-0.25)
+                  size = rel(11), vjust=-0.25) +
+               annotate("text", x = 3.5, y = ymax*0.9,
+                          label = paste("Total isoforms:", total_isoforms), 
+                          color="black", size = 10) 
                 
 
     print(g)
     dev.off()
-
+    print(total_isoforms)
 }
 
 
@@ -109,6 +115,8 @@ parse_options <- function() {
                     default = NULL, help = "Filtered TALON abundance file"),
         make_option(c("--datasets"), action = "store", dest = "datasets",
                     default = NULL, help = "Comma-separated list of datasets to include"),
+        make_option(c("--ymax"), action = "store", dest = "ymax",
+                    default = NULL, help = "Optional: max value for y axis."),
         make_option(c("-o","--outdir"), action = "store", dest = "outdir",
                     default = NULL, help = "Output directory for plots and outfiles")
         )
