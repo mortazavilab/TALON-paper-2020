@@ -13,13 +13,15 @@ def get_options():
                   help = ("If this option is set, reads from the Genomic "
                           "novelty category will be omitted in the output."),
                    default = False)
+    parser.add_option('--maxFracA', dest='a_frac', default=0.5,
+                  help='The maximum fraction of As to be considered not internally primed. Default=0.5')
     parser.add_option("--outprefix", dest = "outprefix",
                       help = ("Prefix for outfile"))
 
     (options, args) = parser.parse_args()
     return options
 
-def plot_fraction_internal_primed_per_category(data, outprefix):
+def plot_fraction_internal_primed_per_category(data, outprefix, a_frac):
     """ Input: TALON read_annot file """
 
     cat_order = [ 'Known', 'ISM', 'NIC', 'NNC', 'Antisense', 'Intergenic',
@@ -33,7 +35,7 @@ def plot_fraction_internal_primed_per_category(data, outprefix):
                       'Intergenic': '#CC79A7'}
 
     # Manipulate data to get counts per category and percentages within novelty groups
-    data['internal_primed'] = [ x  > 0.5 for x in list(data.fraction_As) ]
+    data['internal_primed'] = [ x  > a_frac for x in list(data.fraction_As) ]
     primed_per_cat = data.groupby(["transcript_novelty", "internal_primed"]).size()
     primed_per_cat = primed_per_cat.reset_index()
     primed_per_cat.columns = ["transcript_novelty", "internal_primed", "count"]
@@ -107,7 +109,7 @@ def main():
         data = data.loc[data.transcript_novelty != 'Genomic']
 
     # Plot fraction As by novelty category
-    plot_fraction_internal_primed_per_category(data, options.outprefix)
+    plot_fraction_internal_primed_per_category(data, options.outprefix, options.a_frac)
 
 if __name__ == '__main__':
     main()
