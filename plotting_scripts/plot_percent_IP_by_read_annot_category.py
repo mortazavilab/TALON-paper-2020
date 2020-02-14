@@ -35,7 +35,7 @@ def plot_fraction_internal_primed_per_category(data, outprefix, a_frac):
                       'Intergenic': '#CC79A7'}
 
     # Manipulate data to get counts per category and percentages within novelty groups
-    data['internal_primed'] = [ float(x)  > a_frac for x in list(data.fraction_As) ]
+    data['internal_primed'] = [ float(x)  > float(a_frac) for x in list(data.fraction_As) ]
     primed_per_cat = data.groupby(["transcript_novelty", "internal_primed"]).size()
     primed_per_cat = primed_per_cat.reset_index()
     primed_per_cat.columns = ["transcript_novelty", "internal_primed", "count"]
