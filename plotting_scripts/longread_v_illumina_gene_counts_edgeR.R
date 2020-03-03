@@ -198,7 +198,7 @@ parse_options <- function() {
     make_option(c("--xmax"), action = "store", dest = "xmax",
                 default = 16, help = "Max x-value for plot (default = 16)"),
     make_option(c("--ymax"), action = "store", dest = "ymax",
-                default = 20, help = "Max y-value for plot (default = 20)"))
+                default = 20, help = "Max y-value for plot (default = 20)"),
     make_option(c("-o","--outdir"), action = "store", dest = "outdir",
                 default = NULL, help = "Output directory for plots and outfiles"),
     make_option(c("--dtype"), action = "store", dest = "dtype",
