@@ -26,7 +26,7 @@ Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
           -o plots/
 ```
 
-<img align="center" width="400" src="ONT_GM12878_R1-ONT_GM12878_R2_gene_correlationPlot.png">
+<img align="center" width="400" src="plots/ONT_GM12878_R1-ONT_GM12878_R2_gene_correlationPlot.png">
 Correlations are in ONT_GM12878_R1-ONT_GM12878_R2_gene_correlations.txt. 
 
 
@@ -41,7 +41,7 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R  \
           -o plots/ 
 ```
 
-<img align="center" width="400" src="ONT_GM12878_R1-ONT_GM12878_R2_Known_transcript_correlationPlot.png">
+<img align="center" width="400" src="plots/ONT_GM12878_R1-ONT_GM12878_R2_Known_transcript_correlationPlot.png">
 Correlations are in ONT_GM12878_R1-ONT_GM12878_R2_Known_transcript_correlations.txt. 
 
 ## Panel C: Total number of Oxford Nanopore reads assigned to each novelty category after transcript filtering
@@ -52,7 +52,7 @@ Rscript ${PLOTPATH}/plot_novelty_category_read_counts_one_dataset.R \
          --o plots/
 ```
 
-<img align="center" width="400" src="ONT_GM12878_R1_reads_by_isoform_category.png">
+<img align="center" width="400" src="plots/ONT_GM12878_R1_reads_by_isoform_category.png">
 
 ## Panel D: Number of distinct transcript isoforms observed in each novelty category (Oxford Nanopore GM12878)
 ```bash
@@ -62,7 +62,7 @@ Rscript ${PLOTPATH}/plot_novelty_categories_distinct_isoforms.R \
          --o plots/
 ```
 
-<img align="center" width="400" src="ONT_GM12878_R1-ONT_GM12878_R2_distinct_isoforms_by_category.png">
+<img align="center" width="400" src="plots/ONT_GM12878_R1-ONT_GM12878_R2_distinct_isoforms_by_category.png">
 
 
 ## Panel E: Expression level of known genes (Gencode v29) models in GM12878 as quantified using PacBio (x) and Oxford Nanopore (y)
@@ -78,7 +78,7 @@ Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
           -o plots/
 ```
 
-<img align="center" width="400" src="PB_GM12878_R1-ONT_GM12878_R1_gene_correlationPlot.png">
+<img align="center" width="400" src="plots/PB_GM12878_R1-ONT_GM12878_R1_gene_correlationPlot.png">
 Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known_transcript_correlations.txt. 
 
 
@@ -94,7 +94,7 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R  \
           --antisense 
 ```
 
-<img align="center" width="400" src="PB_GM12878_R1-ONT_GM12878_R1_Known-Antisense_transcript_correlationPlot.png">
+<img align="center" width="400" src="plots/PB_GM12878_R1-ONT_GM12878_R1_Known-Antisense_transcript_correlationPlot.png">
 Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-Antisense_transcript_correlations.txt.
 
 
