@@ -16,6 +16,12 @@ talon_abundance \
 	-b hg38_SIRV \
 	-d pb_datasets \
 	--o  pb
+grep -v 'SIRV\|ERCC' pb_talon_abundance.tsv > pb_talon_abundance_no_sirv_no_ercc.tsv
+head -1 pb_talon_abundance.tsv > pb_sirv_talon_abundance.tsv
+grep SIRV pb_talon_abundance.tsv >> pb_sirv_talon_abundance.tsv
+head -1 pb_talon_abundance.tsv > pb_ercc_talon_abundance.tsv
+grep ERCC pb_talon_abundance.tsv >> pb_ercc_talon_abundance.tsv
+mv pb_talon_abundance_no_sirv_no_ercc.tsv pb_talon_abundance.tsv
 
 # create a whitelist for pb datasets
 talon_filter_transcripts \
@@ -33,6 +39,12 @@ talon_abundance \
 	-d pb_datasets \
 	--whitelist pb_whitelist.csv \
 	--o pb
+grep -v 'SIRV\|ERCC' pb_talon_abundance_filtered.tsv > pb_talon_abundance_filtered_no_sirv_no_ercc.tsv
+head -1 pb_talon_abundance_filtered.tsv > pb_sirv_talon_abundance_filtered.tsv
+grep SIRV pb_talon_abundance_filtered.tsv >> pb_sirv_talon_abundance_filtered.tsv
+head -1 pb_talon_abundance_filtered.tsv > pb_ercc_talon_abundance_filtered.tsv
+grep ERCC pb_talon_abundance_filtered.tsv >> pb_ercc_talon_abundance_filtered.tsv
+mv pb_talon_abundance_filtered_no_sirv_no_ercc.tsv pb_talon_abundance_filtered.tsv
 
 # create a filtered GTF
 talon_create_GTF \
@@ -43,8 +55,13 @@ talon_create_GTF \
 	--observed \
 	-d pb_datasets \
 	--o pb
+grep -v 'SIRV\|ERCC' pb_talon_observedOnly.gtf > pb_talon_observedOnly_no_sirv_no_ercc.gtf
+grep SIRV pb_talon_observedOnly.gtf > pb_sirv_talon_observedOnly.gtf
+grep ERCC pb_talon_observedOnly.gtf > pb_ercc_talon_observedOnly.gtf
+mv pb_talon_observedOnly_no_sirv_no_ercc.gtf pb_talon_observedOnly.gtf
 
 ## ONT ##
+
 printf "ONT_GM12878_R1\nONT_GM12878_R2" > ont_datasets
 
 # unfiltered PB abundance
@@ -81,4 +98,45 @@ talon_create_GTF \
 	--observed \
 	-d ont_datasets \
 	--o ont
+
+## PACBIO + ONT ##
+
+printf "PB_GM12878_R1\nPB_GM12878_R2\nONT_GM12878_R1\nONT_GM12878_R2" > pb_ont_datasets
+
+# unfiltered PB+ONT abundance
+talon_abundance \
+	--db $db \
+	--a gencode_v29_SIRV \
+	-b hg38_SIRV \
+	-d pb_ont_datasets \
+	--o  pb_ont
+grep -v 'SIRV\|ERCC' pb_ont_talon_abundance.tsv > pb_ont_talon_abundance_no_sirv_no_ercc.tsv
+head -1 pb_ont_talon_abundance.tsv > pb_ont_sirv_talon_abundance.tsv
+grep SIRV pb_ont_talon_abundance.tsv >> pb_ont_sirv_talon_abundance.tsv
+head -1 pb_ont_talon_abundance.tsv > pb_ont_ercc_talon_abundance.tsv
+grep ERCC pb_ont_talon_abundance.tsv >> pb_ont_ercc_talon_abundance.tsv
+mv pb_ont_talon_abundance_no_sirv_no_ercc.tsv pb_ont_talon_abundance.tsv
+
+# create a whitelist comprised of unique values in both the ONT and PB whitelists
+cat pb_whitelist.csv > pb_ont_whitelist.csv 
+cat ont_whitelist.csv >> pb_ont_whitelist.csv
+cat pb_ont_whitelist.csv | sort | uniq > pb_ont_whitelist.csv
+
+# create a filtered abundance file
+talon_abundance \
+	--db $db \
+	--a gencode_v29_SIRV \
+	-b hg38_SIRV \
+	-d pb_ont_datasets \
+	--whitelist pb_ont_whitelist.csv \
+	--o pb_ont
+grep -v 'SIRV\|ERCC' pb_ont_talon_abundance_filtered.tsv > pb_ont_talon_abundance_filtered_no_sirv_no_ercc.tsv
+head -1 pb_ont_talon_abundance_filtered.tsv > pb_ont_sirv_talon_abundance_filtered.tsv
+grep SIRV pb_ont_talon_abundance_filtered.tsv >> pb_ont_sirv_talon_abundance_filtered.tsv
+head -1 pb_ont_talon_abundance_filtered.tsv > pb_ont_ercc_talon_abundance_filtered.tsv
+grep ERCC pb_ont_talon_abundance_filtered.tsv >> pb_ont_ercc_talon_abundance_filtered.tsv
+mv pb_ont_talon_abundance_filtered_no_sirv_no_ercc.tsv pb_ont_talon_abundance_filtered.tsv
+
+
+
 
