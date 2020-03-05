@@ -68,7 +68,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
 ```bash
 OUT=PAS-comp/PacBio_GM12878
 mkdir -p ${OUT}
-python ../PAS-computational/run_computational_PAS_analysis.py \
+python run_computational_PAS_analysis.py \
         --gtf ${PB_GTF} \
         --genome ${GENOME} \
         --maxdist 35 \
@@ -78,7 +78,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
     --f ${OUT}/GM12878_polyA_motif.csv \
     --t PAS-comp \
     --novelty ${OUT}/transcript_beds/GM12878_novelty.csv \
-    --ymax 22000 \
+    --ymax 31000 \
     --splitISM \
     -o ${OUTPLOTS}/GM12878_PacBio
 
@@ -89,7 +89,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
 ```bash
 OUT=PAS-comp/ONT_GM12878
 mkdir -p ${OUT}
-python ../PAS-computational/run_computational_PAS_analysis.py \
+python run_computational_PAS_analysis.py \
         --gtf ${ONT_GTF} \
         --genome ${GENOME} \
         --maxdist 35 \
@@ -99,7 +99,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
     --f ${OUT}/GM12878_polyA_motif.csv \
     --t PAS-comp \
     --novelty ${OUT}/transcript_beds/GM12878_novelty.csv \
-    --ymax 22000 \
+    --ymax 31000 \
     --splitISM \
     -o ${OUTPLOTS}/GM12878_ONT
 

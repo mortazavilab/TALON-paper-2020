@@ -58,7 +58,7 @@ def main():
     try:
         out = outdir + "/transcript_beds/" + name
         bedfile = outdir + "/transcript_beds/"+ name + ".bed"
-        subprocess.check_output(["python", script_dir +"/check_last_n_transcript_seq_for_PA_motif.py",
+        subprocess.check_output(["python", utils_dir +"/check_last_n_transcript_seq_for_PA_motif.py",
                                  "--bed", bedfile, "--maxdist", str(max_dist),
                                  "--genome", genome,
                                  "--o",  outprefix])
