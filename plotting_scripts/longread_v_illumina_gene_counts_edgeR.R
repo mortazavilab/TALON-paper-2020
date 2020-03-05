@@ -25,40 +25,40 @@ main <-function() {
     # abundance files
     illumina_1 <- filter_kallisto_illumina_genes(opt$illumina_kallisto_1)
     illumina_2 <- filter_kallisto_illumina_genes(opt$illumina_kallisto_2)
-    colnames(illumina_1) <- c("annot_gene_name", "illumina_counts_1")
-    colnames(illumina_2) <- c("annot_gene_name", "illumina_counts_2")
-    illumina_gene_table <- merge(illumina_1, illumina_2, by = "annot_gene_name",
+    colnames(illumina_1) <- c("annot_gene_id", "illumina_counts_1")
+    colnames(illumina_2) <- c("annot_gene_id", "illumina_counts_2")
+    illumina_gene_table <- merge(illumina_1, illumina_2, by = "annot_gene_id",
                                  all.x = T, all.y = T)
     illumina_gene_table[is.na(illumina_gene_table)] <- 0
     illumina_gene_table$illumina_counts_1 <- round(illumina_gene_table$illumina_counts_1)
     illumina_gene_table$illumina_counts_2 <- round(illumina_gene_table$illumina_counts_2)
 
     # Read PacBio abundance file
-    pb_abundance <- as.data.frame(read_delim(opt$infile, "\t", escape_double = FALSE,
+    pb_abundance_orig <- as.data.frame(read_delim(opt$infile, "\t", escape_double = FALSE,
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
     # Keep known genes only
-    pb_abundance <- subset(pb_abundance, gene_novelty == "Known")
+    pb_abundance <- subset(pb_abundance_orig, gene_novelty == "Known")
 
     # Cut out unnecessary cols
-    pb_abundance <- pb_abundance[, c("annot_gene_name", dataset1, dataset2)]
+    pb_abundance <- pb_abundance[, c("annot_gene_id", dataset1, dataset2)]
 
-    # Aggregate PacBio by gene name to get gene counts
-    pb_gene_abundance <- ddply(pb_abundance, c("annot_gene_name"), 
+    # Aggregate PacBio by gene ID to get gene-wise counts
+    pb_gene_abundance <- ddply(pb_abundance, c("annot_gene_id"), 
                                function(x) colSums(x[c(dataset1, dataset2)]))
 
     # Merge PacBio with Illumina on annot_gene_name
-    merged_illumina_pacbio <- merge(illumina_gene_table, pb_gene_abundance, by = "annot_gene_name",
+    merged_illumina_pacbio <- merge(illumina_gene_table, pb_gene_abundance, by = "annot_gene_id",
                                     all.x = T, all.y = T)
     merged_illumina_pacbio[is.na(merged_illumina_pacbio)] <- 0
-    merged_illumina_pacbio <- merged_illumina_pacbio[, c("annot_gene_name", 
+    merged_illumina_pacbio <- merged_illumina_pacbio[, c("annot_gene_id", 
                                                          "illumina_counts_1", 
                                                          "illumina_counts_2",  
                                                          dataset1, dataset2)]
 
     # Now, format table for edgeR by setting the rownames to the gene names
-    rownames(merged_illumina_pacbio) <- merged_illumina_pacbio$annot_gene_name
-    merged_illumina_pacbio$annot_gene_name <- NULL
+    rownames(merged_illumina_pacbio) <- merged_illumina_pacbio$annot_gene_id
+    merged_illumina_pacbio$annot_gene_id <- NULL
 
     # Remove rows that only contain zeros
     merged_illumina_pacbio <- merged_illumina_pacbio[rowSums(merged_illumina_pacbio) > 0, ]
@@ -108,10 +108,12 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
         width = 2500, height = 2500, units = "px",
         bg = "white",  res = 300)
 
+    print(head(data))
+
     g <- ggplot(data, aes(x=logCPM, y=logFC, color = status)) +
          geom_point(alpha = 0.4, size = 2) +
          xlab(xlabel) + ylab(ylabel) + theme_bw() +
-         coord_cartesian(xlim=c(0,xmax), ylim = c(-1*ymax,ymax)) +
+         #coord_cartesian(xlim=c(0,xmax), ylim = c(-1*ymax,ymax)) +
          scale_color_manual(values = c("orange", fillcolor),
                                   labels = c(paste0("Significant (n = ", n_sig, ")"),
                                              paste0("Not significant (n = ", n_no_sig, ")"))) +
@@ -143,7 +145,7 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
     colnames(extraCols) = c("transcript", "gene", "class", "t_ID", "g_ID")
     gencode.quantitation = cbind(extraCols, gencode.quantitation)
 
-    # Remove transcripts that are < 300 bp in length because PacBio chucks anything that size
+    # Remove transcripts that are < 300 bp in length 
     gencode_quant_min300 <- subset(gencode.quantitation, length >= 300)
 
     # Remove genes that are on the mitochondrial blacklist
@@ -154,21 +156,22 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
                                  "MT-ATP8", "MT-ATP6", "MT-CO3", "MT-TG", "MT-ND3",
                                  "MT-TR", "MT-ND4L", "MT-ND4", "MT-TH", "MT-TS2",
                                  "MT-TL2", "MT-ND5", "MT-ND6", "MT-CYB","MTATP6P1")
-    gencode_quant_min300_noMT <- subset(gencode_quant_min300, 
-                                 !(gene %in% mitochondrial_blacklist))[,c("gene", "est_counts", "tpm")]
+    gencode_quant_min300_noMT <- subset(gencode_quant_min300, !(gene %in% mitochondrial_blacklist))
 
     # Aggregate by gene
-    gene_gencode_quant_min300_noMT <- aggregate(.~gene, gencode_quant_min300_noMT, sum)
+    gene_gencode_quant_min300_noMT <- gencode_quant_min300_noMT %>%
+                                      dplyr::group_by(g_ID) %>% 
+                                      dplyr::summarize(counts = sum(est_counts))
 
-    # Constraints: TPM > 1
-    #final_filtered_genes <- gene_gencode_quant_min300_noMT[gene_gencode_quant_min300_noMT$tpm > 1,]
+    colnames(gene_gencode_quant_min300_noMT) <- c("gene", "counts")
 
-
-    return(gene_gencode_quant_min300_noMT[,c("gene", "est_counts")])
+    return(gene_gencode_quant_min300_noMT)
 }
+
 
 load_packages <- function() {
     suppressPackageStartupMessages(library("ggplot2"))
+    suppressPackageStartupMessages(library("dplyr"))
     suppressPackageStartupMessages(library("plyr"))
     suppressPackageStartupMessages(library("Hmisc"))
     suppressPackageStartupMessages(library("optparse"))
