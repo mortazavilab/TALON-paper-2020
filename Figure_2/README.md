@@ -24,9 +24,76 @@ Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
           --d2_type 'Rep2 PacBio' \
           -o plots/
 ```
+<img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_gene_correlationPlot.png">
+Pearson and Spearman correlations are recorded in plots/PB_GM12878_R1-PB_GM12878_R2_gene_correlations.txt.
 
-## Panel B
+## Panel B: Proportion of genes expressed in Illumina RNA-seq data of GM12878 that are also detected in the PacBio GM12878 data, binned by Illumina expression level
+```
+Rscript ${PLOTPATH}/plot_detection_by_TPM_for_datasets.R \
+         --f ${abundance} \
+         --datasets PB_GM12878_R1,PB_GM12878_R2 \
+         --ik1 ${kallisto1} \
+         --ik2 ${kallisto2} \
+         --color blue \
+         --dtype PacBio \
+         -o plots/
+```
+<img align="center" width="400" src="plots/gene_detection_by_TPM.png">	
 
-## Panel C
+## Panel C: Comparison of gene expression levels for known genes in the PacBio and Illumina RNA-seq platforms (GM12878)
+```
+Rscript ${PLOTPATH}/longread_v_illumina_gene_counts_edgeR.R \
+         --f ${abundance} \
+         --datasets PB_GM12878_R1,PB_GM12878_R2 \
+         --ik1 ${kallisto1} \
+         --ik2 ${kallisto2} \
+         --color blue \
+         --ymax 20 \
+         -o plots/
+```
+<img align="center" width="400" src="plots/edgeR_PacBio_illumina_gene_MA_plot.png">
 
-## Panel D
+## Panel D: Number of distinct transcript isoforms observed in each novelty category (GM12878)
+```
+Rscript ${PLOTPATH}/plot_novelty_categories_distinct_isoforms.R \
+         --f ${filt_abundance} \
+         --datasets PB_GM12878_R1,PB_GM12878_R2 \
+         --o plots/
+```
+
+## Panel E: Expression level of known transcript models in each biological replicate of GM12878
+```
+Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
+         --f ${filt_abundance} \
+         --d1 PB_GM12878_R1 \
+         --d1_type 'Rep1 PacBio' \
+         --d2 PB_GM12878_R2 \
+         --d2_type 'Rep2 PacBio' \
+         --celltype GM12878 \
+         -o plots/
+```
+
+## Panel F: Expression of transcript models in each biological replicate of GM12878, labeled by their novelty assignments
+```
+Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
+         --f ${filt_abundance} \
+         --d1 PB_GM12878_R1 \
+         --d1_type 'Rep1 PacBio' \
+         --d2 PB_GM12878_R2 \
+         --d2_type 'Rep2 PacBio' \
+         --celltype GM12878 \
+         --ISM --NIC --NNC --antisense --intergenic \
+         -o plots/
+```
+
+## Panel G: Comparison of known transcript expression levels in the PacBio and Illumina RNA-seq platforms (GM12878 Rep 1 and 2).
+```
+Rscript ${PLOTPATH}/longread_v_illumina_transcripts_edgeR.R \
+         --f ${filt_abundance} \
+         --datasets PB_GM12878_R1,PB_GM12878_R2 \
+         --ik1 ${kallisto1} \
+         --ik2 ${kallisto2} \
+         --color green \
+         --ymax 20 \
+          -o plots/
+```
