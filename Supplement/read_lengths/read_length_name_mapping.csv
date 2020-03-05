@@ -1,0 +1,5 @@
+dataset,celltype,name,color
+PB_GM12878_R1,GM12878,PacBio GM12878 Rep1,tab:blue
+PB_GM12878_R2,GM12878,PacBio GM12878 Rep2,tab:blue
+ONT_GM12878_R1,GM12878,ONT GM12878 Rep1,tab:blue
+ONT_GM12878_R2,GM12878,ONT GM12878 Rep2,tab:blue
