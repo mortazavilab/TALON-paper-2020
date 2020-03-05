@@ -149,7 +149,9 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
     gencode_quant_min300_noMT <- subset(gencode_quant_min300, !(gene %in% mitochondrial_blacklist))
 
     # Aggregate by gene
-    gene_gencode_quant_min300_noMT <- aggregate(gencode_quant_min300_noMT$tpm, by=list(gencode_quant_min300_noMT$g_ID), FUN=sum)
+    gene_gencode_quant_min300_noMT <- gencode_quant_min300_noMT %>%
+                                 dplyr::group_by(g_ID) %>%
+                                 dplyr::summarize(tpm = sum(tpm))
     colnames(gene_gencode_quant_min300_noMT) <- c("gene", "tpm")
 
     # Constraints: > 300 bp, TPM > 1
@@ -159,17 +161,17 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
     total_transcripts <- sum(final_filtered_genes$tpm)
     TPM_scaling <- 1000000/total_transcripts
     final_filtered_genes$tpm <- final_filtered_genes$tpm*TPM_scaling
-
     return(final_filtered_genes)
 }
 
 load_packages <- function() {
     suppressPackageStartupMessages(library("DBI"))
     suppressPackageStartupMessages(library("ggplot2"))
+    suppressPackageStartupMessages(library("dplyr"))
     suppressPackageStartupMessages(library("plyr"))
     suppressPackageStartupMessages(library("Hmisc"))
     suppressPackageStartupMessages(library("optparse"))
-    suppressPackageStartupMessages(library("RSQLite"))
+    #suppressPackageStartupMessages(library("RSQLite"))
     suppressPackageStartupMessages(library("tidyverse"))
     suppressPackageStartupMessages(library("reshape"))
     suppressPackageStartupMessages(library("stringr"))
