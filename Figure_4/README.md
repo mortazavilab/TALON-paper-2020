@@ -121,7 +121,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
     --f ${OUT}/GM12878_RNA-PET_results.csv \
     --t RNA-PET \
     --novelty ${OUT}/transcript_beds/GM12878_novelty.csv \
-    --ymax 22000 \
+    --ymax 31000 \
     --splitISM \
     -o ${OUTPLOTS}/GM12878_PacBio
 ```
@@ -142,7 +142,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
     --f ${OUT}/GM12878_RNA-PET_results.csv \
     --t RNA-PET \
     --novelty ${OUT}/transcript_beds/GM12878_novelty.csv \
-    --ymax 22000 \
+    --ymax 31000 \
     --splitISM \
     -o ${OUTPLOTS}/GM12878_ONT
 ```
