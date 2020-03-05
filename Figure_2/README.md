@@ -73,6 +73,7 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
          --celltype GM12878 \
          -o plots/
 ```
+<img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_Known_transcript_correlationPlot.png">
 
 ## Panel F: Expression of transcript models in each biological replicate of GM12878, labeled by their novelty assignments
 ```
