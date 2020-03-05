@@ -10,7 +10,7 @@ data_dir=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TAL
 PB_GTF=$data_dir/pb_talon.gtf
 ONT_GTF=$data_dir/ont_talon.gtf
 CAGE=../CAGE_data/FANTOM5/hg38_CAGE.bed
-RNAPET=../RNA-PET/GM12878_hg38.bed
+RNAPET=../RNA-PET_data/data/GM12878_hg38.bed
 GENOME=../refs/hg38_SIRV/hg38_SIRV.fa
 ```
 GTF files are available as supplementary tables of the TALON paper.  
@@ -111,7 +111,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
 ```bash
 OUT=RNA-PET/PacBio_GM12878
 mkdir -p ${OUT}
-python ../RNA-PET/run_RNA-PET_analysis.py \
+python run_RNA-PET_analysis.py \
     --gtf ${PB_GTF} \
     --rnapet ${RNAPET} \
     --maxdist 100 \
@@ -132,7 +132,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
 ```bash
 OUT=RNA-PET/ONT_GM12878
 mkdir -p ${OUT}
-python ../RNA-PET/run_RNA-PET_analysis.py \
+python run_RNA-PET_analysis.py \
     --gtf ${ONT_GTF} \
     --rnapet ${RNAPET} \
     --maxdist 100 \
