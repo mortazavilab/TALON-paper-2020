@@ -4,8 +4,11 @@
 Firstly, some filepaths:
 ```bash
 PLOTPATH=../plotting_scripts
+APATH=../analysis_scripts
+
 abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/ont_talon_abundance.tsv
 filt_abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/ont_talon_abundance_filtered.tsv
+gtf=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/ont_talon_observedOnly.gtf
 pb_ont_abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_ont_talon_abundance.tsv
 pb_ont_filt_abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_ont_talon_abundance_filtered.tsv
 mkdir plots
@@ -97,6 +100,15 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R  \
 <img align="center" width="400" src="plots/PB_GM12878_R1-ONT_GM12878_R1_Known-Antisense_transcript_correlationPlot.png">
 Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-Antisense_transcript_correlations.txt.
 
+## Panel G: Visualization of ONT GM12878 custom GTF annotations in the UCSC genome browser
+```bash
+# create config file for gtf creation
+# replace url with the url to your public-facing directory
+url=http://crick.bio.uci.edu/freese/TALON_gtf/ont_talon_observedOnly_tracks
+printf "${gtf},n+,0,none,$url" > pb_ont_track_config
+python ${APATH}/gen_novelty_tracks_gtf.py \
+    --c pb_ont_track_config
+```
 
 <!-- ```R
 Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
