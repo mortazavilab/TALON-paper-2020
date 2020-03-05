@@ -16,6 +16,7 @@ talon_abundance \
 	-b hg38_SIRV \
 	-d pb_datasets \
 	--o  pb
+cp pb_talon_abundance.tsv backup/
 grep -v 'SIRV\|gSpikein_ERCC' pb_talon_abundance.tsv > pb_talon_abundance_no_sirv_no_ercc.tsv
 head -1 pb_talon_abundance.tsv > pb_sirv_talon_abundance.tsv
 grep SIRV pb_talon_abundance.tsv >> pb_sirv_talon_abundance.tsv
@@ -39,6 +40,7 @@ talon_abundance \
 	-d pb_datasets \
 	--whitelist pb_whitelist.csv \
 	--o pb
+cp pb_talon_abundance_filtered.tsv backup/
 grep -v 'SIRV\|gSpikein_ERCC' pb_talon_abundance_filtered.tsv > pb_talon_abundance_filtered_no_sirv_no_ercc.tsv
 head -1 pb_talon_abundance_filtered.tsv > pb_sirv_talon_abundance_filtered.tsv
 grep SIRV pb_talon_abundance_filtered.tsv >> pb_sirv_talon_abundance_filtered.tsv
@@ -54,6 +56,7 @@ talon_create_GTF \
 	--whitelist pb_whitelist.csv \
 	-d pb_datasets \
 	--o pb
+cp pb_talon.gtf backup/
 grep -v 'SIRV\|gSpikein_ERCC' pb_talon.gtf > pb_talon_no_sirv_no_ercc.gtf
 grep SIRV pb_talon.gtf > pb_sirv_talon.gtf
 grep gSpikein_ERCC pb_talon.gtf > pb_ercc_talon.gtf
@@ -70,6 +73,7 @@ talon_abundance \
 	-b hg38_SIRV \
 	-d ont_datasets \
 	--o  ont
+cp ont_talon_abundance.tsv backup/
 grep -v 'SIRV\|gSpikein_ERCC' ont_talon_abundance.tsv > ont_talon_abundance_no_sirv_no_ercc.tsv
 head -1 ont_talon_abundance.tsv > ont_sirv_talon_abundance.tsv
 grep SIRV ont_talon_abundance.tsv >> ont_sirv_talon_abundance.tsv
@@ -93,6 +97,7 @@ talon_abundance \
 	-d ont_datasets \
 	--whitelist ont_whitelist.csv \
 	--o ont
+cp ont_talon_abundance_filtered.tsv backup/
 grep -v 'SIRV\|gSpikein_ERCC' ont_talon_abundance_filtered.tsv > ont_talon_abundance_filtered_no_sirv_no_ercc.tsv
 head -1 ont_talon_abundance_filtered.tsv > ont_sirv_talon_abundance_filtered.tsv
 grep SIRV ont_talon_abundance_filtered.tsv >> ont_sirv_talon_abundance_filtered.tsv
@@ -108,6 +113,7 @@ talon_create_GTF \
 	--whitelist ont_whitelist.csv \
 	-d ont_datasets \
 	--o ont
+cp ont_talon.gtf backup/
 grep -v 'SIRV\|gSpikein_ERCC' ont_talon.gtf > ont_talon_no_sirv_no_ercc.gtf
 grep SIRV ont_talon.gtf > ont_sirv_talon.gtf
 grep gSpikein_ERCC ont_talon.gtf > ont_ercc_talon.gtf
@@ -124,6 +130,7 @@ talon_abundance \
 	-b hg38_SIRV \
 	-d pb_ont_datasets \
 	--o  pb_ont
+cp pb_ont_talon_abundance.tsv backup/
 grep -v 'SIRV\|gSpikein_ERCC' pb_ont_talon_abundance.tsv > pb_ont_talon_abundance_no_sirv_no_ercc.tsv
 head -1 pb_ont_talon_abundance.tsv > pb_ont_sirv_talon_abundance.tsv
 grep SIRV pb_ont_talon_abundance.tsv >> pb_ont_sirv_talon_abundance.tsv
@@ -144,6 +151,7 @@ talon_abundance \
 	-d pb_ont_datasets \
 	--whitelist pb_ont_whitelist.csv \
 	--o pb_ont
+cp pb_ont_talon_abundance_filtered.tsv backup/
 grep -v 'SIRV\|gSpikein_ERCC' pb_ont_talon_abundance_filtered.tsv > pb_ont_talon_abundance_filtered_no_sirv_no_ercc.tsv
 head -1 pb_ont_talon_abundance_filtered.tsv > pb_ont_sirv_talon_abundance_filtered.tsv
 grep SIRV pb_ont_talon_abundance_filtered.tsv >> pb_ont_sirv_talon_abundance_filtered.tsv
