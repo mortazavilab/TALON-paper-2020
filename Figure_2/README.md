@@ -98,3 +98,12 @@ Rscript ${PLOTPATH}/longread_v_illumina_transcripts_edgeR.R \
          --ymax 20 \
           -o plots/
 ```
+
+## Panel H: Total number of PacBio reads assigned to each novelty category after transcript filtering
+```
+Rscript ${PLOTPATH}/plot_novelty_category_read_counts_one_dataset.R \
+         --f ${filt_abundance}  \
+         --dataset PB_GM12878_R1 \
+         --o plots/
+```
+<img align="center" width="400" src="plots/PB_GM12878_R1_reads_by_isoform_category.png">
