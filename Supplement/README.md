@@ -45,29 +45,6 @@ Rscript ${PLOTPATH}/plot_gene_length_by_detection_for_datasets.R \
            -o figures/
 ```
 <img align="center" width="600" src="figures/length_by_detection_and_TPM_Median.png">
-<!-- 
-## Panel B: Detection of known genes as a function of PacBio read depth in GM12878. The number of short-read genes that were detected in PacBio is shown cumulatively for each possible ordering of four PacBio datasets. The total number of Illumina genes was 10367.
-```bash
-Rscript ${PLOTPATH}/plot_discovery_curve_knownOnly.R \
-    --f /share/crsp/lab/seyedam/share/TALON_paper_data/revisions_10-19/human_TALON/analysis/supplementary_tables/XS1_PacBio_GM12878_all4_talon_abundance.tsv \
-    --color blue \
-    --rc PacBio_GM12878_read_counts.csv \
-    --ik1 ${kallisto1} \
-    --ik2 ${kallisto2} \
-    -o figures/
-
-```
-This script call also creates the file: figures/gene_detection.csv, which is needed for Panel C.
-<img align="center" width="600" src="figures/discovery_curves_genes_knownOnly.png">
-
-## Panel C: GC content of known genes that were detected in at least one of four PacBio replicates, versus those that were detected in short reads only.
-```bash
-python ../GC-content/run_GC_analysis.py \
-    --genes figures/gene_detection.csv \
-    --fasta ../refs/gencode.v29.transcripts.fa.gz \
-    --o figures
-```
-<img align="center" width="600" src="figures/GC_plot.png"> -->
 
 # Figure S?: Number of exons per transcript model detected in PacBio GM12878 transcriptomes. Transcripts are grouped by novelty type assignment.
 ```bash
@@ -97,4 +74,30 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
 ```
 <img align="center" width="400" src="figures/PB_GM12878_R1-ONT_GM12878_R1_Known-ISM_transcript_correlationPlot.png">
 Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-ISM_transcript_correlations.txt. 
+
+<!-- 
+## Panel B: Detection of known genes as a function of PacBio read depth in GM12878. The number of short-read genes that were detected in PacBio is shown cumulatively for each possible ordering of four PacBio datasets. The total number of Illumina genes was 10367.
+```bash
+Rscript ${PLOTPATH}/plot_discovery_curve_knownOnly.R \
+    --f /share/crsp/lab/seyedam/share/TALON_paper_data/revisions_10-19/human_TALON/analysis/supplementary_tables/XS1_PacBio_GM12878_all4_talon_abundance.tsv \
+    --color blue \
+    --rc PacBio_GM12878_read_counts.csv \
+    --ik1 ${kallisto1} \
+    --ik2 ${kallisto2} \
+    -o figures/
+
+```
+This script call also creates the file: figures/gene_detection.csv, which is needed for Panel C.
+<img align="center" width="600" src="figures/discovery_curves_genes_knownOnly.png">
+
+## Panel C: GC content of known genes that were detected in at least one of four PacBio replicates, versus those that were detected in short reads only.
+```bash
+python ../GC-content/run_GC_analysis.py \
+    --genes figures/gene_detection.csv \
+    --fasta ../refs/gencode.v29.transcripts.fa.gz \
+    --o figures
+```
+<img align="center" width="600" src="figures/GC_plot.png"> -->
+
+
 
