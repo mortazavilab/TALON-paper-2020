@@ -87,6 +87,7 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
          --ISM --NIC --NNC --antisense --intergenic \
          -o plots/
 ```
+<img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_Known-ISM-NIC-NNC-Antisense-Intergenic_transcript_correlationPlot.png">
 
 ## Panel G: Comparison of known transcript expression levels in the PacBio and Illumina RNA-seq platforms (GM12878 Rep 1 and 2).
 ```
