@@ -69,6 +69,11 @@ main <-function() {
     # edgeR basics: 
     group <- factor(c("Illumina","Illumina","PacBio","PacBio")) # Indicate which group each col belongs to
     y <- DGEList(counts=merged_illumina_pacbio, group = group) # Create a DGEList object
+
+    # Filter out lowly expressed
+    keep <- filterByExpr(y)
+    y <- y[keep, , keep.lib.sizes=FALSE]
+
     y <- calcNormFactors(y) # Normalize counts in the object
     design <- model.matrix(~group)
     y <- estimateDisp(y,design)
@@ -87,7 +92,10 @@ main <-function() {
     ma_plot(illumina_PB_et, fill_color, opt$outdir, dtype, opt$xmax, opt$ymax)
 
     # Merge the EdgeR table with the other information
-    illumina_PB_et <- cbind(illumina_PB_et, merged_illumina_pacbio)
+    # Merge the EdgeR table with the other information
+    illumina_PB_et <- merge(illumina_PB_et, merged_illumina_pacbio,
+                            by.x = "gene_id", by.y = "row.names",
+                            all.x = T, all.y = F)
 
     # Merge in human-readable gene names
     gene_names <- get_gene_names(opt$illumina_kallisto_1)
