@@ -120,7 +120,7 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
     g <- ggplot(data, aes(x=logCPM, y=logFC, color = status)) +
          geom_point(alpha = 0.4, size = 2) +
          xlab(xlabel) + ylab(ylabel) + theme_bw() +
-         coord_cartesian(xlim=c(0,xmax), ylim = c(-1*ymax,ymax)) +
+         coord_cartesian(xlim=c(-5,xmax), ylim = c(-1*ymax,ymax)) +
          scale_color_manual(values = c("orange", fillcolor),
                                   labels = c(paste0("Significant (n = ", n_sig, ")"),
                                              paste0("Not significant (n = ", n_no_sig, ")"))) +
