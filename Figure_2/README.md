@@ -92,12 +92,13 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
 
 ## Panel G: Comparison of known transcript expression levels in the PacBio and Illumina RNA-seq platforms (GM12878 Rep 1 and 2).
 ```
-Rscript ${PLOTPATH}/longread_v_illumina_transcripts_edgeR.R \
+Rscript ${PLOTPATH}/longread_v_illumina_transcript_counts_edgeR.R \
          --f ${filt_abundance} \
          --datasets PB_GM12878_R1,PB_GM12878_R2 \
          --ik1 ${kallisto1} \
          --ik2 ${kallisto2} \
          --color green \
+         --xmax 16 \
          --ymax 20 \
           -o plots/
 ```

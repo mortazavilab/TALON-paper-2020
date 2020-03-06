@@ -10,7 +10,7 @@ main <-function() {
     } else if (opt$color_scheme == "blue") {
         fill_color <- "navy"
     } else if (opt$color_scheme == "green") {
-        fill_color <- "yellowgreen"
+        fill_color <- "#009E73"
     }
 
     # Get the names of the first and second dataset that we will be working with
@@ -21,46 +21,43 @@ main <-function() {
     # datatype label (ONT or PacBio)
     dtype <- opt$dtype
 
-    # Get genes expressed in the Illumina data from the Kallisto
+    # Get transcripts expressed in the Illumina data from the Kallisto
     # abundance files
-    illumina_1 <- filter_kallisto_illumina_genes(opt$illumina_kallisto_1)
-    illumina_2 <- filter_kallisto_illumina_genes(opt$illumina_kallisto_2)
-    colnames(illumina_1) <- c("annot_gene_id", "illumina_counts_1")
-    colnames(illumina_2) <- c("annot_gene_id", "illumina_counts_2")
-    illumina_gene_table <- merge(illumina_1, illumina_2, by = "annot_gene_id",
+    illumina_1 <- filter_kallisto_illumina_transcripts(opt$illumina_kallisto_1)
+    illumina_2 <- filter_kallisto_illumina_transcripts(opt$illumina_kallisto_2)
+    colnames(illumina_1) <- c("annot_transcript_id", "illumina_counts_1")
+    colnames(illumina_2) <- c("annot_transcript_id", "illumina_counts_2")
+    illumina_table <- merge(illumina_1, illumina_2, by = "annot_transcript_id",
                                  all.x = T, all.y = T)
-    print(paste0("Illumina genes: ", nrow(illumina_gene_table)))
-    illumina_gene_table[is.na(illumina_gene_table)] <- 0
-    illumina_gene_table$illumina_counts_1 <- round(illumina_gene_table$illumina_counts_1)
-    illumina_gene_table$illumina_counts_2 <- round(illumina_gene_table$illumina_counts_2)
+    print(paste0("Illumina transcripts: ", nrow(illumina_table)))
+    illumina_table[is.na(illumina_table)] <- 0
+    illumina_table$illumina_counts_1 <- round(illumina_table$illumina_counts_1)
+    illumina_table$illumina_counts_2 <- round(illumina_table$illumina_counts_2)
 
     # Read PacBio abundance file
     pb_abundance_orig <- as.data.frame(read_delim(opt$infile, "\t", escape_double = FALSE,
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
-    # Keep known genes only
-    pb_abundance <- subset(pb_abundance_orig, gene_novelty == "Known")
+    # Keep known transcripts only
+    pb_abundance <- subset(pb_abundance_orig, transcript_novelty == "Known")
 
     # Cut out unnecessary cols
-    pb_abundance <- pb_abundance[, c("annot_gene_id", dataset1, dataset2)]
+    pb_abundance <- pb_abundance[, c("annot_transcript_id", dataset1, dataset2)]
 
-    # Aggregate PacBio by gene ID to get gene-wise counts
-    pb_gene_abundance <- ddply(pb_abundance, c("annot_gene_id"), 
-                               function(x) colSums(x[c(dataset1, dataset2)]))
 
-    # Merge PacBio with Illumina on annot_gene_name
-    merged_illumina_pacbio <- merge(illumina_gene_table, pb_gene_abundance, by = "annot_gene_id",
+    # Merge PacBio with Illumina on annot_transcript_name
+    merged_illumina_pacbio <- merge(illumina_table, pb_abundance, by = "annot_transcript_id",
                                     all.x = T, all.y = T)
 
     merged_illumina_pacbio[is.na(merged_illumina_pacbio)] <- 0
-    merged_illumina_pacbio <- merged_illumina_pacbio[, c("annot_gene_id", 
+    merged_illumina_pacbio <- merged_illumina_pacbio[, c("annot_transcript_id", 
                                                          "illumina_counts_1", 
                                                          "illumina_counts_2",  
                                                          dataset1, dataset2)]
 
     # Now, format table for edgeR by setting the rownames to the gene names
-    rownames(merged_illumina_pacbio) <- merged_illumina_pacbio$annot_gene_id
-    merged_illumina_pacbio$annot_gene_id <- NULL
+    rownames(merged_illumina_pacbio) <- merged_illumina_pacbio$annot_transcript_id
+    merged_illumina_pacbio$annot_transcript_id <- NULL
 
     # Remove rows that only contain zeros
     merged_illumina_pacbio <- merged_illumina_pacbio[rowSums(merged_illumina_pacbio) > 0, ]
@@ -83,7 +80,7 @@ main <-function() {
 
     # Extract exact test table for plotting
     illumina_PB_et <- et$table
-    illumina_PB_et$gene_id <- rownames(illumina_PB_et)
+    illumina_PB_et$transcript_id <- rownames(illumina_PB_et)
 
     # Adjust p-values
     illumina_PB_et$adj_pval <- p.adjust(illumina_PB_et$PValue, method = "bonferroni")
@@ -92,18 +89,17 @@ main <-function() {
     ma_plot(illumina_PB_et, fill_color, opt$outdir, dtype, opt$xmax, opt$ymax)
 
     # Merge the EdgeR table with the other information
-    # Merge the EdgeR table with the other information
-    illumina_PB_et <- merge(illumina_PB_et, merged_illumina_pacbio,
-                            by.x = "gene_id", by.y = "row.names",
+    illumina_PB_et <- merge(illumina_PB_et, merged_illumina_pacbio, 
+                            by.x = "transcript_id", by.y = "row.names",
                             all.x = T, all.y = F)
 
     # Merge in human-readable gene names
-    gene_names <- get_gene_names(opt$illumina_kallisto_1)
-    illumina_PB_et <- merge(illumina_PB_et, gene_names, by.x = "gene_id",
-                            by.y = "g_ID", all.x = T, all.y = F)
+    transcript_names <- get_transcript_names(opt$illumina_kallisto_1)
+    illumina_PB_et <- merge(illumina_PB_et, transcript_names, by.x = "transcript_id",
+                            by.y = "t_ID", all.x = T, all.y = F)
     illumina_PB_et <- illumina_PB_et[order(illumina_PB_et$adj_pval),]
     write.table(illumina_PB_et, 
-                paste(opt$outdir, "/edgeR_", dtype, "_illumina_gene_counts.tsv", sep=""),
+                paste(opt$outdir, "/edgeR_", dtype, "_illumina_transcript_counts.tsv", sep=""),
                 row.names=F, col.names=T, quote=F)
 }
 
@@ -115,7 +111,7 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
     n_sig <- length(data$status[data$status == "Bonf. p-value <= 0.01"])
     n_no_sig <- length(data$status[data$status == "Bonf. p-value > 0.01"])
 
-    fname <- paste(outdir, "/edgeR_", dtype, "_illumina_gene_counts_MA_plot.png", sep="")
+    fname <- paste(outdir, "/edgeR_", dtype, "_illumina_transcript_counts_MA_plot.png", sep="")
     xlabel <- "log2(Counts per million)"
     ylabel <- paste0(dtype, " to Illumina log2-fold change")
 
@@ -147,9 +143,9 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
     dev.off()
 }
 
-filter_kallisto_illumina_genes <- function(kallisto_file) {
-    # This function takes a Kallisto abundance file and filters the genes
-    # based on criteria designed to make the gene set comparable to what can
+filter_kallisto_illumina_transcripts <- function(kallisto_file) {
+    # This function takes a Kallisto abundance file and filters the transcripts
+    # based on criteria designed to make the transcript set comparable to what can
     # be detected using PacBio
 
     gencode.quantitation <- as.data.frame(read_delim(kallisto_file, "\t", escape_double = FALSE,
@@ -157,28 +153,22 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
 
     # Split GENCODE transcript multi-id by '|'
     extraCols <- str_split_fixed(gencode.quantitation$target_id, "\\|",9)[,c(5,6,8,1,2)]
-    colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
+    colnames(extraCols) <- c("transcript", "gene_name", "class", "t_ID", "g_ID")
     gencode.quantitation <- cbind(extraCols, gencode.quantitation)
 
-    # Aggregate by gene
-    gene_gencode <- gencode.quantitation %>%
-                                 dplyr::group_by(g_ID) %>%
-                                 dplyr::summarize(counts = sum(est_counts), tpm = sum(tpm))
-    colnames(gene_gencode) <- c("g_ID", "count", "tpm")
+    gencode.quantitation <- subset(gencode.quantitation, tpm > 0)
 
-    gene_gencode <- subset(gene_gencode, tpm > 0)
-
-    return(gene_gencode[,c("g_ID", "count")])
+    return(gencode.quantitation[,c("t_ID", "est_counts")])
 }
 
-get_gene_names <- function(kallisto_file) {
+get_transcript_names <- function(kallisto_file) {
     data <- as.data.frame(read_delim(kallisto_file, "\t", escape_double = FALSE,
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
     extraCols <- str_split_fixed(data$target_id, "\\|",9)[,c(5,6,8,1,2)]
     colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
 
-    return(unique(extraCols[,c("g_ID", "gene")]))
+    return(unique(extraCols[,c("t_ID", "transcript")]))
 
 }
 
