@@ -48,6 +48,7 @@ Rscript ${PLOTPATH}/longread_v_illumina_gene_counts_edgeR.R \
          --ik1 ${kallisto1} \
          --ik2 ${kallisto2} \
          --color blue \
+         --xmax 16 \
          --ymax 20 \
          -o plots/
 ```
