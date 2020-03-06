@@ -52,7 +52,7 @@ Rscript ${PLOTPATH}/longread_v_illumina_gene_counts_edgeR.R \
          --ymax 20 \
          -o plots/
 ```
-<img align="center" width="400" src="plots/edgeR_PacBio_illumina_gene_MA_plot.png">
+<img align="center" width="400" src="plots/edgeR_PacBio_illumina_gene_counts_MA_plot.png">
 
 ## Panel D: Number of distinct transcript isoforms observed in each novelty category (GM12878)
 ```
