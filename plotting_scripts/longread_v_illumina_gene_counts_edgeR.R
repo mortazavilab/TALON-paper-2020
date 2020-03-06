@@ -29,6 +29,7 @@ main <-function() {
     colnames(illumina_2) <- c("annot_gene_id", "illumina_counts_2")
     illumina_gene_table <- merge(illumina_1, illumina_2, by = "annot_gene_id",
                                  all.x = T, all.y = T)
+    print(paste0("Illumina genes: ", nrow(illumina_gene_table)))
     illumina_gene_table[is.na(illumina_gene_table)] <- 0
     illumina_gene_table$illumina_counts_1 <- round(illumina_gene_table$illumina_counts_1)
     illumina_gene_table$illumina_counts_2 <- round(illumina_gene_table$illumina_counts_2)
@@ -50,6 +51,7 @@ main <-function() {
     # Merge PacBio with Illumina on annot_gene_name
     merged_illumina_pacbio <- merge(illumina_gene_table, pb_gene_abundance, by = "annot_gene_id",
                                     all.x = T, all.y = T)
+
     merged_illumina_pacbio[is.na(merged_illumina_pacbio)] <- 0
     merged_illumina_pacbio <- merged_illumina_pacbio[, c("annot_gene_id", 
                                                          "illumina_counts_1", 
@@ -76,7 +78,7 @@ main <-function() {
 
     # Extract exact test table for plotting
     illumina_PB_et <- et$table
-    illumina_PB_et$gene_name <- rownames(illumina_PB_et)
+    illumina_PB_et$gene_id <- rownames(illumina_PB_et)
 
     # Adjust p-values
     illumina_PB_et$adj_pval <- p.adjust(illumina_PB_et$PValue, method = "bonferroni")
@@ -86,6 +88,11 @@ main <-function() {
 
     # Merge the EdgeR table with the other information
     illumina_PB_et <- cbind(illumina_PB_et, merged_illumina_pacbio)
+
+    # Merge in human-readable gene names
+    gene_names <- get_gene_names(opt$illumina_kallisto_1)
+    illumina_PB_et <- merge(illumina_PB_et, gene_names, by.x = "gene_id",
+                            by.y = "g_ID", all.x = T, all.y = F)
     illumina_PB_et <- illumina_PB_et[order(illumina_PB_et$adj_pval),]
     write.table(illumina_PB_et, 
                 paste(opt$outdir, "/edgeR_", dtype, "_illumina_gene_counts.tsv", sep=""),
@@ -113,7 +120,7 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
     g <- ggplot(data, aes(x=logCPM, y=logFC, color = status)) +
          geom_point(alpha = 0.4, size = 2) +
          xlab(xlabel) + ylab(ylabel) + theme_bw() +
-         #coord_cartesian(xlim=c(0,xmax), ylim = c(-1*ymax,ymax)) +
+         coord_cartesian(xlim=c(-5,xmax), ylim = c(-1*ymax,ymax)) +
          scale_color_manual(values = c("orange", fillcolor),
                                   labels = c(paste0("Significant (n = ", n_sig, ")"),
                                              paste0("Not significant (n = ", n_no_sig, ")"))) +
@@ -141,33 +148,31 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
     # Split GENCODE transcript multi-id by '|'
-    extraCols =str_split_fixed(gencode.quantitation$target_id, "\\|",9)[,c(5,6,8,1,2)]
-    colnames(extraCols) = c("transcript", "gene", "class", "t_ID", "g_ID")
-    gencode.quantitation = cbind(extraCols, gencode.quantitation)
-
-    # Remove transcripts that are < 300 bp in length 
-    gencode_quant_min300 <- subset(gencode.quantitation, length >= 300)
-
-    # Remove genes that are on the mitochondrial blacklist
-    mitochondrial_blacklist <- c("MT-TF", "MT-RNR1", "MT-TV", "MT-RNR2", "MT-TL1",
-                                 "MT-ND1", "MT-TI", "MT-TQ", "MT-TM", "MT-ND2",
-                                 "MT-TW", "MT-TA", "MT-TN", "MT-TC", "MT-TY",
-                                 "MT-CO1", "MT-TS1", "MT-TD", "MT-CO2", "MT-TK",
-                                 "MT-ATP8", "MT-ATP6", "MT-CO3", "MT-TG", "MT-ND3",
-                                 "MT-TR", "MT-ND4L", "MT-ND4", "MT-TH", "MT-TS2",
-                                 "MT-TL2", "MT-ND5", "MT-ND6", "MT-CYB","MTATP6P1")
-    gencode_quant_min300_noMT <- subset(gencode_quant_min300, !(gene %in% mitochondrial_blacklist))
+    extraCols <- str_split_fixed(gencode.quantitation$target_id, "\\|",9)[,c(5,6,8,1,2)]
+    colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
+    gencode.quantitation <- cbind(extraCols, gencode.quantitation)
 
     # Aggregate by gene
-    gene_gencode_quant_min300_noMT <- gencode_quant_min300_noMT %>%
-                                      dplyr::group_by(g_ID) %>% 
-                                      dplyr::summarize(counts = sum(est_counts))
+    gene_gencode <- gencode.quantitation %>%
+                                 dplyr::group_by(g_ID) %>%
+                                 dplyr::summarize(counts = sum(est_counts), tpm = sum(tpm))
+    colnames(gene_gencode) <- c("g_ID", "count", "tpm")
 
-    colnames(gene_gencode_quant_min300_noMT) <- c("gene", "counts")
+    gene_gencode <- subset(gene_gencode, tpm > 0)
 
-    return(gene_gencode_quant_min300_noMT)
+    return(gene_gencode[,c("g_ID", "count")])
 }
 
+get_gene_names <- function(kallisto_file) {
+    data <- as.data.frame(read_delim(kallisto_file, "\t", escape_double = FALSE,
+                                  col_names = TRUE, trim_ws = TRUE, na = "NA"))
+
+    extraCols <- str_split_fixed(data$target_id, "\\|",9)[,c(5,6,8,1,2)]
+    colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
+
+    return(unique(extraCols[,c("g_ID", "gene")]))
+
+}
 
 load_packages <- function() {
     suppressPackageStartupMessages(library("ggplot2"))
