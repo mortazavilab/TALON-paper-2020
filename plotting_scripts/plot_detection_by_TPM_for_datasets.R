@@ -27,6 +27,7 @@ main <-function() {
     illumina_gene_table <- illumina_gene_table[complete.cases(illumina_gene_table), ]
     illumina_gene_table$tpm <- (illumina_gene_table$illumina_TPM_1 +
                                 illumina_gene_table$illumina_TPM_2) / 2
+    print(paste0("Illumina genes: ", nrow(illumina_gene_table)))
 
     
     # Get the names of the first and second dataset that we will be working with
@@ -56,7 +57,7 @@ main <-function() {
 }
 
 get_buckets <- function(illumina) {
-    intervals = c(1, 2, seq(5, 20, 5), 50, 100, 500)
+    intervals = c(0, 1, 2, seq(5, 20, 5), 50, 100, 500)
     illumina$group = cut(illumina$tpm, c(intervals, 100000000000))   
 
     cIntervals = as.character(intervals)
@@ -121,7 +122,6 @@ get_detected_genes_for_dataset <- function(abundance, dataset) {
     return(observed_genes)
 }
 
-
 filter_kallisto_illumina_genes <- function(kallisto_file) {
     # This function takes a Kallisto abundance file and filters the genes
     # based on criteria designed to make the gene set comparable to what can
@@ -131,37 +131,20 @@ filter_kallisto_illumina_genes <- function(kallisto_file) {
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
     # Split GENCODE transcript multi-id by '|'
-    extraCols =str_split_fixed(gencode.quantitation$target_id, "\\|",9)[,c(5,6,8,1,2)]
-    colnames(extraCols) = c("transcript", "gene", "class", "t_ID", "g_ID")
-    gencode.quantitation = cbind(extraCols, gencode.quantitation)
+    extraCols <- str_split_fixed(gencode.quantitation$target_id, "\\|",9)[,c(5,6,8,1,2)]
+    colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
+    gencode.quantitation <- cbind(extraCols, gencode.quantitation)
 
-    # Remove transcripts that are < 300 bp in length because PacBio chucks anything that size
-    gencode_quant_min300 <- subset(gencode.quantitation, length >= 300)
-
-    # Remove genes that are on the mitochondrial blacklist
-    mitochondrial_blacklist <- c("MT-TF", "MT-RNR1", "MT-TV", "MT-RNR2", "MT-TL1", 
-                                 "MT-ND1", "MT-TI", "MT-TQ", "MT-TM", "MT-ND2", 
-                                 "MT-TW", "MT-TA", "MT-TN", "MT-TC", "MT-TY", 
-                                 "MT-CO1", "MT-TS1", "MT-TD", "MT-CO2", "MT-TK", 
-                                 "MT-ATP8", "MT-ATP6", "MT-CO3", "MT-TG", "MT-ND3", 
-                                 "MT-TR", "MT-ND4L", "MT-ND4", "MT-TH", "MT-TS2", 
-                                 "MT-TL2", "MT-ND5", "MT-ND6", "MT-CYB","MTATP6P1")
-    gencode_quant_min300_noMT <- subset(gencode_quant_min300, !(gene %in% mitochondrial_blacklist))
-
-    # Aggregate by gene
-    gene_gencode_quant_min300_noMT <- gencode_quant_min300_noMT %>%
+    # Aggregate on genes
+    gene_gencode <- gencode.quantitation %>%
                                  dplyr::group_by(g_ID) %>%
                                  dplyr::summarize(tpm = sum(tpm))
-    colnames(gene_gencode_quant_min300_noMT) <- c("gene", "tpm")
+    print(nrow(gene_gencode))
+    gene_gencode <- subset(gene_gencode, tpm > 0)
+    print(nrow(gene_gencode))
 
-    # Constraints: > 300 bp, TPM > 1
-    final_filtered_genes <- gene_gencode_quant_min300_noMT[gene_gencode_quant_min300_noMT$tpm > 1,]
+    return(gene_gencode)
 
-    # Normalize back to 1 million transcripts
-    total_transcripts <- sum(final_filtered_genes$tpm)
-    TPM_scaling <- 1000000/total_transcripts
-    final_filtered_genes$tpm <- final_filtered_genes$tpm*TPM_scaling
-    return(final_filtered_genes)
 }
 
 load_packages <- function() {
