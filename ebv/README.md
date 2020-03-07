@@ -89,11 +89,21 @@ gm_filt_ab=/data/users/freese/TALON_data/revisions_1-20/human_TALON/pb_talon_abu
 ## Plotting
 ### Generate EBV abundance violin plots
 ```bash
-python ebv_compute_tpms.py --c ebv_expression_config.csv
+python ebv_compute_tpms.py \
+    --human_gtf $gm_gtf \
+    --human_filt_ab $gm_filt_ab \
+    --human_ab $gm_ab \
+    --ebv_filt_ab ebv_talon_abundance_filtered.tsv \
+    --ebv_ab ebv_talon_abundance.tsv \
+    --datasets PB_GM12878_R1,PB_GM12878_R2 \
+    --o pb
+```
+```bash
 Rscript plot_ebv_v_human_abundances.R \
-          --gene_csv ebv_human_gene_abundance.csv \
-          --transcript_csv ebv_human_transcript_abundance.csv \
-          --datasets combined
+          --gene_csv pb_ebv_human_gene_abundance.csv \
+          --transcript_csv pb_ebv_human_transcript_abundance.csv \
+          --datasets combined \
+          --o pb
 ```
 
 <img align="center" width="300" src="combined_genes_ebv_human.png "><img align="center" width="300" src="combined_transcripts_ebv_human.png ">
@@ -112,6 +122,8 @@ printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gt
 From here, you can open the genome browser up and display your tracklines, and use the genome browser's PDF functionality or take a screenshot to get the genome browser shot. 
 
 <img align="center" width="700" src="ebv_tracks.png ">
+
+
 
 <!-- 
 1. Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
