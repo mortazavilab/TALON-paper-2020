@@ -104,7 +104,7 @@ Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-Antisense_transcript_corr
 ```bash
 # create config file for gtf creation
 # replace url with the url to your public-facing directory
-url=http://crick.bio.uci.edu/freese/TALON_gtf/ont_talon_observedOnly_tracks
+url=http://crick.bio.uci.edu/freese/TALON_gtf/ont_talon_tracks
 printf "${gtf},n+,0,none,$url" > pb_ont_track_config
 python ${APATH}/gen_novelty_tracks_gtf.py \
     --c pb_ont_track_config

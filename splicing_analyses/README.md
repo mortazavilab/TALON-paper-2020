@@ -105,7 +105,28 @@ python plot_sj_novelty_counts.py \
 
 <img align="center" width="500" src="figures/PacBio_GM12878_sj_novelty_Illumina_support.png">
 
-6. We can also visualize how known and novel splice junctions are supported by the different technologies (illumina, pacbio, ont)
+6. Perform the same analyses for ont
+```bash 
+# get the novel ONT splice junctions
+python label_sj_novelty.py \
+	-sj ont_talon_GM12878_sjs.tab \
+	-ref_sj gencode_v29_sjs.tab 
+
+python plot_sj_novelty_counts.py \
+	-sj ont_talon_GM12878_sjs_novelty.tab \
+	-sample "ONT GM12878"
+
+python plot_sj_novelty_counts.py \
+	-sj ont_talon_GM12878_sjs_novelty.tab \
+	-sample "ONT GM12878" \
+	--extra_support GM12878_alignedSJ.out_novelty.tab \
+	--support_name Illumina
+```
+
+<img align="center" width="350" src="figures/ONT_GM12878_sj_novelty.png"> <img align="center" width="350" src="figures/ONT_GM12878_sj_novelty_Illumina_support.png">
+<img align="center" width="500" src="figures/ONT_GM12878_gc_venn2.png">
+
+7. We can also visualize how known and novel splice junctions are supported by the different technologies (illumina, pacbio, ont)
 ```bash
 # get the novel PacBio splice junctions
 python compare_sjs_venn2.py \
@@ -122,21 +143,6 @@ python compare_sjs_venn2.py \
 	-sj_2 gencode_v29_sjs.tab \
 	-sj_2_name "Gencode" \
 	-sample "Illumina GM12878"
-
-# get the novel ONT splice junctions
-python label_sj_novelty.py \
-	-sj ont_talon_GM12878_sjs.tab \
-	-ref_sj gencode_v29_sjs.tab 
-
-python plot_sj_novelty_counts.py \
-	-sj ont_talon_GM12878_sjs_novelty.tab \
-	-sample "ONT GM12878"
-
-python plot_sj_novelty_counts.py \
-	-sj ont_talon_GM12878_sjs_novelty.tab \
-	-sample "ONT GM12878" \
-	--extra_support GM12878_alignedSJ.out_novelty.tab \
-	--support_name Illumina
 
 python compare_sjs_venn2.py \
 	-sj_1 ont_talon_GM12878_sjs_novelty.tab \
