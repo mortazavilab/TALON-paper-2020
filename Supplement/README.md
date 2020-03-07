@@ -99,5 +99,34 @@ python ../GC-content/run_GC_analysis.py \
 ```
 <img align="center" width="600" src="figures/GC_plot.png"> -->
 
-
-
+## Known gene expression correlation between long read platforms and Illumina
+### PacBio
+```
+mkdir -p lr_sr_corr
+abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_talon_abundance.tsv
+Rscript ${PLOTPATH}/plot_longread_illumina_gene_correlation.R \
+    --f ${abundance} \
+    --ik1 ${kallisto1} \
+    --ik2 ${kallisto2} \
+    --color blue \
+    --r1 PB_GM12878_R1 \
+    --r2 PB_GM12878_R2 \
+    --srtype Illumina \
+    --lrtype PacBio \
+    -o lr_sr_corr
+```
+### ONT
+```
+mkdir -p lr_sr_corr
+abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/ont_talon_abundance.tsv
+Rscript ${PLOTPATH}/plot_longread_illumina_gene_correlation.R \
+    --f ${abundance} \
+    --ik1 ${kallisto1} \
+    --ik2 ${kallisto2} \
+    --color blue \
+    --r1 ONT_GM12878_R1 \
+    --r2 ONT_GM12878_R2 \
+    --srtype Illumina \
+    --lrtype ONT \
+    -o lr_sr_corr
+```
