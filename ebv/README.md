@@ -32,6 +32,7 @@ talon_initialize_database \
 
 ### Run TALON on EBV reads extracted from mapped GM12878 sam files
 ```bash
+printf "PB_GM12878_R1,PB_GM12878_R1,PacBio-Sequel,ebv_rep1.sam\nPB_GM12878_R2,PB_GM12878_R2,PacBio-Sequel,ebv_rep2.sam" > ebv_talon_config.csv
 talon \
     --f ebv_talon_config.csv \
     --db ebv.db \
@@ -106,11 +107,13 @@ Rscript plot_ebv_v_human_abundances.R \
           --o pb
 ```
 
-<img align="center" width="300" src="combined_genes_ebv_human.png "><img align="center" width="300" src="combined_transcripts_ebv_human.png ">
+<img align="center" width="300" src="pb_genes_ebv_human.png "><img align="center" width="300" src="pb_transcripts_ebv_human.png ">
 
 ## Genome browser trackline
 ### Generate tracklines using above GTF
 ```bash
+echo "ebv_talon.gtf,n+,0,N/A,http://crick.bio.uci.edu/freese/TALON_gtf/ebv_talon_tracks" > ebv_gtf_track_config.csv
+
 python ../analysis_scripts/gen_novelty_tracks_gtf.py \
           --c ebv_gtf_track_config.csv
 url=`cut -d, -f5 ebv_gtf_track_config.csv`
@@ -123,7 +126,92 @@ From here, you can open the genome browser up and display your tracklines, and u
 
 <img align="center" width="700" src="ebv_tracks.png ">
 
+## Run for ONT data as well 
+```bash
+# get sam files for just ebv 
+rep1_sam=/data/users/freese/TALON_data/revisions_1-20/data/ONT_RNA02_GM12878_R1/label_reads/ONT_Rep1_labeled.sam
+rep2_sam=/data/users/freese/TALON_data/revisions_1-20/data/ONT_RNA02_GM12878_R2/label_reads/ONT_Rep2_labeled.sam
 
+grep ^@ $rep1_sam > ont_ebv_rep1.sam
+grep chrEBV $rep1_sam >> ont_ebv_rep1.sam
+grep ^@ $rep2_sam > ont_ebv_rep2.sam
+grep chrEBV $rep2_sam >> ebv_rep2.sam
+
+sed -i 's/chrEBV/chr1/' ont_ebv_rep1.sam
+sed -i 's/chrEBV/chr1/' ont_ebv_rep2.sam
+
+
+# run talon
+sed 's/chrEBV/chr1/' ebv.gtf > ebv_chr1.gtf
+talon_initialize_database \
+    --f ebv_chr1.gtf \
+    --g HHV4 \
+    --a HHV4 \
+    --o ont_ebv
+
+printf "ONT_GM12878_R1,ONT_GM12878_R1,ONT,ont_ebv_rep1.sam\nONT_GM12878_R2,ONT_GM12878_R2,ONT,ont_ebv_rep2.sam" > ont_ebv_talon_config.csv
+talon \
+    --f ont_ebv_talon_config.csv \
+    --db ont_ebv.db \
+    --build HHV4 \
+    --o ont_ebv
+
+# get post-talon files
+talon_filter_transcripts \
+    --db ont_ebv.db \
+    -a HHV4 \
+    --maxFracA 0.5 \
+    --o ont_ebv_whitelist
+talon_create_GTF \
+      --db ont_ebv.db \
+      --b HHV4 \
+      --a HHV4 \
+      --o ont_ebv \
+      --whitelist ont_ebv_whitelist
+talon_abundance \
+    --db ont_ebv.db \
+    --a HHV4 \
+    --b HHV4 \
+    --o ont_ebv
+talon_abundance \
+    --db ont_ebv.db \
+    --a HHV4 \
+    --b HHV4 \
+    --whitelist ont_ebv_whitelist \
+    --o ont_ebv
+
+# make human vs. ebv plots
+gm_gtf=/data/users/freese/TALON_data/revisions_1-20/human_TALON/ont_talon.gtf
+gm_ab=/data/users/freese/TALON_data/revisions_1-20/human_TALON/ont_talon_abundance.tsv
+gm_filt_ab=/data/users/freese/TALON_data/revisions_1-20/human_TALON/ont_talon_abundance_filtered.tsv
+
+python ebv_compute_tpms.py \
+    --human_gtf $gm_gtf \
+    --human_filt_ab $gm_filt_ab \
+    --human_ab $gm_ab \
+    --ebv_filt_ab ont_ebv_talon_abundance_filtered.tsv \
+    --ebv_ab ont_ebv_talon_abundance.tsv \
+    --datasets ONT_GM12878_R1,ONT_GM12878_R2 \
+    --o ont
+Rscript plot_ebv_v_human_abundances.R \
+          --gene_csv ont_ebv_human_gene_abundance.csv \
+          --transcript_csv ont_ebv_human_transcript_abundance.csv \
+          --datasets combined \
+          --o ont
+
+# make gtf tracks
+echo "ont_ebv_talon.gtf,n+,0,N/A,http://crick.bio.uci.edu/freese/TALON_gtf/ont_ebv_talon_tracks" > ont_ebv_gtf_track_config.csv
+
+python ../analysis_scripts/gen_novelty_tracks_gtf.py \
+          --c ont_ebv_gtf_track_config.csv
+url=`cut -d, -f5 ont_ebv_gtf_track_config.csv`
+n=`cut -d, -f2 ont_ebv_gtf_track_config.csv`
+cp ebv_chr1.gtf ont_ebv_talon_tracks/
+printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gtf' "$url" >> ont_ebv_talon_tracks/ont_ebv_talon_${n}_tracks
+```
+<img align="center" width="300" src="ont_genes_ebv_human.png "><img align="center" width="300" src="ont_transcripts_ebv_human.png ">
+
+<img align="center" width="700" src="ont_ebv_tracks.png ">
 
 <!-- 
 1. Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
