@@ -24,12 +24,13 @@ option_list <- list(
                 help='CSV with gene TPMs'),
     make_option(c('--transcript_csv'), action='store', dest='transcript_csv',
                 help='CSV with transcript TPMs'),
-    make_option(c('--datasets'), action='store', dest='datasets'))
+    make_option(c('--datasets'), action='store', dest='datasets'),
+    make_option(c('--o'), action='store', dest='o'))
 opt <- parse_args(OptionParser(option_list=option_list))
 gene_csv = opt$gene_csv
 transcript_csv = opt$transcript_csv
 datasets = unlist(strsplit(opt$datasets, ","))
-odir = dirname(gene_csv)
+oprefix = opt$o
 
 # print(gene_csv)
 # print(transcript_csv)
@@ -71,8 +72,8 @@ for(d in datasets){
   g_human = tally(filter(g_df, UQ(as.name(d)) != 0 & ebv == 'Human')) # human genes
 
   # create output file names
-  t_ofile = paste(odir, '/', d, '_transcripts_ebv_human.png', sep='')
-  g_ofile = paste(odir, '/', d, '_genes_ebv_human.png', sep='')
+  t_ofile = paste(oprefix, '_transcripts_ebv_human.png', sep='')
+  g_ofile = paste(oprefix, '_genes_ebv_human.png', sep='')
 
   # refactor novelty levels to make more sense
   t_df$transcript_novelty <- factor(t_df$transcript_novelty,

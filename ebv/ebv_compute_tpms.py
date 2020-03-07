@@ -63,30 +63,25 @@ def get_log_tpm(df, col, gene):
 
 # get gtf file name 
 parser = argparse.ArgumentParser(description='removes EBV transcripts from GTF file')
-parser.add_argument('--c', help='csv config file with the following fields'\
-								'1: Full GTF'\
-								'2: Full, filtered abundance table'\
-                                '3: Full, unfiltered abundance table'\
-								'4: EBV, filtered abundance table'\
-                                '5: EBV, unfiltered abundance table')
-args = parser.parse_args()
-config = args.c 
-with open(config, 'r') as c:
-	for line in c:
-		1
-line = line.replace('\n', '')
-line = line.split(',')
-full_gtf = line[0]
-full_ab = line[1]
-full_unf_ab = line[2]
-ebv_ab = line[3]
-ebv_unf_ab = line[4]
+parser.add_argument('--human_gtf', help='GTF with human and EBV data')
+parser.add_argument('--human_filt_ab', help='Filtered abundance file with human and EBV data')
+parser.add_argument('--human_ab', help='Unfiltered abundance file with human and EBV data')
+parser.add_argument('--ebv_filt_ab', help='EBV only filtered abundance file')
+parser.add_argument('--ebv_ab', help='EBV only unfiltered abundance file')
+parser.add_argument('--datasets', help='Comma-separated list of dataset names to use for human+ebv data')
+parser.add_argument('--o', help='Prefix for output file')
 
-print(full_gtf)
-print(full_ab)
-print(full_unf_ab)
-print(ebv_ab)
-print(ebv_unf_ab)
+args = parser.parse_args()
+
+full_gtf = args.human_gtf
+full_ab = args.human_filt_ab
+full_unf_ab = args.human_ab
+ebv_ab = args.ebv_filt_ab
+ebv_unf_ab = args.ebv_ab
+
+my_datasets = args.datasets.split(',')
+
+oprefix = args.o
 
 # get all human transcript ids
 infile = open(full_gtf, 'r')
@@ -107,7 +102,7 @@ ebv_df = pd.read_csv(ebv_ab, sep='\t')
 
 # reformat human table
 # dc_datasets = ['D4', 'D5', 'D10', 'D11']
-datasets = ['PB_GM12878_R1', 'PB_GM12878_R2']
+datasets = my_datasets
 # full_df.drop(dc_datasets, inplace=True, axis=1) # drop datasets we don't want
 full_df = full_df.loc[full_df[datasets].sum(axis=1) != 0] # drop transcripts with no reads in datasets we do want
 full_df = full_df.loc[full_df['transcript_ID'].isin(human_tids)] # drop ebv transcripts
@@ -124,7 +119,7 @@ t_df = pd.concat([full_df, ebv_df])
 # combine datasets
 combine_datasets = True
 if combine_datasets:
-    t_df['combined'] = t_df['PB_GM12878_R1']+t_df['PB_GM12878_R2']
+    t_df['combined'] = t_df[my_datasets].sum(axis=1)
     datasets = ['combined']
 
 # # make sure the concatenation worked
@@ -175,12 +170,11 @@ t_df['dot_size'] = t_df.apply(lambda x: 1 if x['ebv'] == 'EBV' else 0.6, axis=1)
 t_df['alpha'] = t_df.apply(lambda x: 0.5 if x['ebv'] == 'EBV' else 0.2, axis=1)
 
 
-bname = get_basename(ebv_ab)
-odir = format_odir(os.path.dirname(ebv_ab))
+# bname = get_basename(ebv_ab)
+# odir = format_odir(os.path.dirname(ebv_ab))
 # odir = make_dated_folder(odir,bname)
-to = odir+'ebv_human_transcript_abundance.csv'
-transcript_outfile = open('ebv_human_transcript_abundance.csv', 'w')
-t_df.to_csv(transcript_outfile, sep=',', index=False)
+to = oprefix+'_ebv_human_transcript_abundance.csv'
+t_df.to_csv(to, sep=',', index=False)
 
 ## get transcript tpms without filtering for bioreps to use for gene tpms
 # read in the unfiltered datasets
@@ -189,7 +183,7 @@ ebv_df = pd.read_csv(ebv_unf_ab, sep='\t')
 
 # reformat human table
 # dc_datasets = ['D4', 'D5', 'D10', 'D11']
-datasets = ['PB_GM12878_R1', 'PB_GM12878_R2']
+datasets = my_datasets
 # full_df.drop(dc_datasets, inplace=True, axis=1) # drop datasets we don't want
 full_df = full_df.loc[full_df['transcript_ID'].isin(human_tids)] # drop ebv transcripts
 full_df['ebv'] = 'Human' # give human/ebv designation
@@ -205,7 +199,7 @@ t_df = pd.concat([full_df, ebv_df])
 # combine datasets
 combine_datasets = True
 if combine_datasets:
-    t_df['combined'] = t_df['PB_GM12878_R1']+t_df['PB_GM12878_R2']
+    t_df['combined'] = t_df[datasets].sum(axis=1)
     datasets = ['combined']
 
 # # make sure the concatenation worked
@@ -305,9 +299,8 @@ g_df['alpha'] = g_df.apply(lambda x: 0.5 if x['ebv'] == 'EBV' else 0.2, axis=1)
 
 # write gene table to a csv 
 
-go = odir+'ebv_human_gene_abundance.csv'
-gene_outfile = open('ebv_human_gene_abundance.csv', 'w')
-g_df.to_csv(gene_outfile, sep=',', index=False)
+go = oprefix+'_ebv_human_gene_abundance.csv'
+g_df.to_csv(go, sep=',', index=False)
 
 # make graphs
 cmd = 'Rscript plot_ebv_v_human_abundances.R --gene_csv {} --transcript_csv {}'\
