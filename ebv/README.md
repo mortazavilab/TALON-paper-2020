@@ -105,26 +105,15 @@ python ../analysis_scripts/gen_novelty_tracks_gtf.py \
           --c ebv_gtf_track_config.csv
 url=`cut -d, -f5 ebv_gtf_track_config.csv`
 n=`cut -d, -f2 ebv_gtf_track_config.csv`
-cp ebv_chr1.gtf ebv_talon_observedOnly_tracks/
-printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gtf' "$url" >> ebv_talon_observedOnly_tracks/ebv_talon_observedOnly_${n}_tracks
+cp ebv_chr1.gtf ebv_talon_tracks/
+printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gtf' "$url" >> ebv_talon_tracks/ebv_talon_${n}_tracks
 ```
 
 From here, you can open the genome browser up and display your tracklines, and use the genome browser's PDF functionality or take a screenshot to get the genome browser shot. 
 
-<img align="center" width="700" src="ebv_browser.png ">
+<img align="center" width="700" src="ebv_tracks.png ">
 
-## CAGE support
-
-<!-- 1. Install the (ENCODE long rna-seq pipeline)[https://github.com/ENCODE-DCC/long-rna-seq-pipeline] to get access to the rampage-idr peak-caller. 
-```bash 
-git clone https://github.com/ENCODE-DCC/long-rna-seq-pipeline
-```
-
-2. Replace long-rna-seq-pipeline/dnanexus/rampage/rampage-idr/resources/usr/bin/rampage_idr.sh with the modified version found in this directory (which has the line that throws out EBV stuff commented out).
-```bash
-cp rampage_idr.sh long-rna-seq-pipeline/dnanexus/rampage/rampage-idr/resources/usr/bin/
-`` -->
-
+<!-- 
 1. Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
 ```bash
 wget https://www.encodeproject.org/files/ENCFF383NVJ/@@download/ENCFF383NVJ.bed.gz
@@ -187,15 +176,6 @@ Rscript plot_support_by_novelty_type.R \
 
 <img align="center" width="700" src="figures/ebv_PAS-comp_support.png">
 
-<!-- 2. Run the rampage_idr script on both sets of EBV CAGE peaks
-```bash
-bash long-rna-seq-pipeline/dnanexus/rampage/rampage-idr/resources/usr/bin/rampage_idr.sh \
-  ENCFF016XXM_ebv_only.bed \
-  ENCFF383NVJ_ebv_only.bed \
-  ebv_chrom_sizes \
-  ebv 
-```
+
+
  -->
-
-
-
