@@ -100,7 +100,7 @@ plot_support <- function(data, data_type, color, ymax, outprefix) {
                      axis.title.x = element_text(color="black", size=rel(1.25)),
                      axis.title.y = element_blank()) +
                 coord_flip(ylim=c(0,ymax)) + guides(fill=FALSE, alpha = FALSE) +
-                geom_text(aes(y = ifelse(percent > 20, total + 2000, total + 2000),
+                geom_text(aes(y = total+10,
                           label = paste0(percent, "%"), color = novelty),
                           position = position_dodge(0.2), size = 8) +
                 scale_color_manual(values = colors) +
