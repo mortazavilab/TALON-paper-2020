@@ -87,6 +87,8 @@ main <-function() {
 
     # Adjust p-values
     illumina_PB_et$adj_pval <- p.adjust(illumina_PB_et$PValue, method = "bonferroni")
+    illumina_PB_et$status <- as.factor(ifelse(abs(illumina_PB_et$logFC) > 1 & illumina_PB_et$adj_pval <= 0.01,
+                             "significant", "not_sig"))
 
     # MA plot
     ma_plot(illumina_PB_et, fill_color, opt$outdir, dtype, opt$xmax, opt$ymax)
@@ -109,16 +111,13 @@ main <-function() {
     illumina_PB_et <- illumina_PB_et[order(illumina_PB_et$adj_pval),]
     write.table(illumina_PB_et, 
                 paste(opt$outdir, "/edgeR_", dtype, "_illumina_gene_counts.tsv", sep=""),
-                row.names=F, col.names=T, quote=F)
+                row.names=F, col.names=T, quote=F, sep = "\t")
 }
 
 ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
 
-    data$status <- as.factor(ifelse(abs(data$logFC) > 1 & data$adj_pval <= 0.01,
-                             "Bonf. p-value <= 0.01", "Bonf. p-value > 0.01"))
-
-    n_sig <- length(data$status[data$status == "Bonf. p-value <= 0.01"])
-    n_no_sig <- length(data$status[data$status == "Bonf. p-value > 0.01"])
+    n_sig <- length(data$status[data$status == "significant"])
+    n_no_sig <- length(data$status[data$status == "not_sig"])
 
     fname <- paste(outdir, "/edgeR_", dtype, "_illumina_gene_counts_MA_plot.png", sep="")
     xlabel <- "log2(Counts per million)"
