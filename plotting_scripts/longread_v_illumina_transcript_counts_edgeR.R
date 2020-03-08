@@ -84,6 +84,8 @@ main <-function() {
 
     # Adjust p-values
     illumina_PB_et$adj_pval <- p.adjust(illumina_PB_et$PValue, method = "bonferroni")
+    illumina_PB_et$status <- as.factor(ifelse(abs(illumina_PB_et$logFC) > 1 & illumina_PB_et$adj_pval <= 0.01,
+                             "significant", "not_sig"))
 
     # MA plot
     ma_plot(illumina_PB_et, fill_color, opt$outdir, dtype, opt$xmax, opt$ymax)
@@ -97,19 +99,22 @@ main <-function() {
     transcript_names <- get_transcript_names(opt$illumina_kallisto_1)
     illumina_PB_et <- merge(illumina_PB_et, transcript_names, by.x = "transcript_id",
                             by.y = "t_ID", all.x = T, all.y = F)
+
+    # Merge in transcript lengths
+    transcript_lengths <- get_transcript_lengths(opt$illumina_kallisto_1)
+    illumina_PB_et <- merge(illumina_PB_et, transcript_lengths, by.x = "transcript_id",
+                            by.y = "t_ID", all.x = T, all.y = F)
+
     illumina_PB_et <- illumina_PB_et[order(illumina_PB_et$adj_pval),]
     write.table(illumina_PB_et, 
                 paste(opt$outdir, "/edgeR_", dtype, "_illumina_transcript_counts.tsv", sep=""),
-                row.names=F, col.names=T, quote=F)
+                row.names=F, col.names=T, quote=F, sep = "\t")
 }
 
 ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
 
-    data$status <- as.factor(ifelse(abs(data$logFC) > 1 & data$adj_pval <= 0.01,
-                             "Bonf. p-value <= 0.01", "Bonf. p-value > 0.01"))
-
-    n_sig <- length(data$status[data$status == "Bonf. p-value <= 0.01"])
-    n_no_sig <- length(data$status[data$status == "Bonf. p-value > 0.01"])
+    n_sig <- length(data$status[data$status == "significant"])
+    n_no_sig <- length(data$status[data$status == "not_sig"])
 
     fname <- paste(outdir, "/edgeR_", dtype, "_illumina_transcript_counts_MA_plot.png", sep="")
     xlabel <- "log2(Counts per million)"
@@ -169,6 +174,17 @@ get_transcript_names <- function(kallisto_file) {
     colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
 
     return(unique(extraCols[,c("t_ID", "transcript")]))
+}
+
+get_transcript_lengths <- function(kallisto_file) {
+    data <- as.data.frame(read_delim(kallisto_file, "\t", escape_double = FALSE,
+                                  col_names = TRUE, trim_ws = TRUE, na = "NA"))
+
+    extraCols <- str_split_fixed(data$target_id, "\\|",9)[,c(5,6,8,1,2)]
+    colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
+    data <- cbind(extraCols, data)
+
+    return(data[,c("t_ID", "length")])
 
 }
 
