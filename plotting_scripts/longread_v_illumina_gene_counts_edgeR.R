@@ -92,7 +92,6 @@ main <-function() {
     ma_plot(illumina_PB_et, fill_color, opt$outdir, dtype, opt$xmax, opt$ymax)
 
     # Merge the EdgeR table with the other information
-    # Merge the EdgeR table with the other information
     illumina_PB_et <- merge(illumina_PB_et, merged_illumina_pacbio,
                             by.x = "gene_id", by.y = "row.names",
                             all.x = T, all.y = F)
@@ -101,6 +100,12 @@ main <-function() {
     gene_names <- get_gene_names(opt$illumina_kallisto_1)
     illumina_PB_et <- merge(illumina_PB_et, gene_names, by.x = "gene_id",
                             by.y = "g_ID", all.x = T, all.y = F)
+
+    # Merge in length info
+    lengths <- get_gene_lengths(opt$illumina_kallisto_1)
+    illumina_PB_et <- merge(illumina_PB_et, lengths, by.x = "gene_id",
+                            by.y = "g_ID", all.x = T, all.y = F)
+
     illumina_PB_et <- illumina_PB_et[order(illumina_PB_et$adj_pval),]
     write.table(illumina_PB_et, 
                 paste(opt$outdir, "/edgeR_", dtype, "_illumina_gene_counts.tsv", sep=""),
@@ -180,6 +185,24 @@ get_gene_names <- function(kallisto_file) {
 
     return(unique(extraCols[,c("g_ID", "gene")]))
 
+}
+
+get_gene_lengths <- function(kallisto_file) {
+    data <- as.data.frame(read_delim(kallisto_file, "\t", escape_double = FALSE,
+                                  col_names = TRUE, trim_ws = TRUE, na = "NA"))
+
+    extraCols <- str_split_fixed(data$target_id, "\\|",9)[,c(5,6,8,1,2)]
+    colnames(extraCols) <- c("transcript", "gene", "class", "t_ID", "g_ID")
+    data <- cbind(extraCols, data)
+
+    gene_gencode <- data %>%
+                                 dplyr::group_by(g_ID) %>%
+                                 dplyr::summarize(min_length = min(length), 
+                                                  max_length = max(length),
+                                                  median_length = median(length),
+                                                  mean_length = mean(length))   
+
+    return(gene_gencode)
 }
 
 load_packages <- function() {
