@@ -3,13 +3,13 @@
 We wanted to see if TALON and long-read sequencing could be used to detect, characterize, and quantify transcripts from the EBV chromosome used to immortalize the GM12878 cell line. 
 
 
-## 1. Initialize some vars
+## Initialize some vars
 ```bash
 rep1_sam=/data/users/freese/TALON_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R1/label_reads/PacBio_Rep1_labeled.sam
 rep2_sam=/data/users/freese/TALON_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R2/label_reads/PacBio_Rep2_labeled.sam
 ```
 
-## 2. Grab all reads that mapped to chrEBV, along with the suyam headers
+## Grab all reads that mapped to chrEBV, along with the suyam headers
 ```bash
 grep ^@ $rep1_sam > ebv_rep1.sam
 grep chrEBV $rep1_sam >> ebv_rep1.sam
@@ -20,7 +20,7 @@ sed -i 's/chrEBV/chr1/' ebv_rep1.sam
 sed -i 's/chrEBV/chr1/' ebv_rep2.sam
 ```
 
-## 3. Initialize TALON db with custom EBV gtf (using chr1 because sam files are fake mapped to chr1)
+## Initialize TALON db with custom EBV gtf (using chr1 because sam files are fake mapped to chr1)
 ```bash
 sed 's/chrEBV/chr1/' ebv.gtf > ebv_chr1.gtf
 talon_initialize_database \
@@ -213,8 +213,8 @@ printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gt
 
 <img align="center" width="700" src="ont_ebv_tracks.png ">
 
-<!-- 
-1. Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
+
+## Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
 ```bash
 wget https://www.encodeproject.org/files/ENCFF383NVJ/@@download/ENCFF383NVJ.bed.gz
 wget https://www.encodeproject.org/files/ENCFF016XXM/@@download/ENCFF016XXM.bed.gz
@@ -228,31 +228,29 @@ cat ENCFF383NVJ_ebv_only.bed > cage_ebv_TSSs.bed
 cat ENCFF016XXM_ebv_only.bed >> cage_ebv_TSSs.bed
 ```
 
-2. Replace chr1 with chrEBV in output TALON gtf so that it matches up with the EBV CAGE peaks.
+## Replace chr1 with chrEBV in output TALON gtf so that it matches up with the EBV CAGE peaks.
 ```bash
-sed 's/chr1/chrEBV/g' ebv_talon_observedOnly.gtf > ebv_talon_observedOnly_ebv.gtf
+sed 's/chr1/chrEBV/g' ebv_talon.gtf > ebv_talon_chrEBV.gtf
 ```
 
-3. Intersect EBV CAGE peaks with TSSs found in our GM12878 data and plot!
+## Intersect EBV CAGE peaks with TSSs found in our GM12878 data and plot!
 ```bash
-mkdir figures
-
 python run_CAGE_analysis.py \
-  --gtf ebv_talon_observedOnly_ebv.gtf \
+  --gtf ebv_talon_chrEBV.gtf \
   --cage cage_ebv_TSSs.bed \
   --maxdist 100 \
-  --o ./ebv
+  --o ./pb_ebv
 
 Rscript plot_support_by_novelty_type.R \
-  --f ebv_CAGE_results.csv \
+  --f pb_ebv_CAGE_results.csv \
   --t CAGE \
-  --novelty transcript_beds/ebv_novelty.csv \
+  --novelty transcript_beds/pb_ebv_novelty.csv \
   --splitISM \
   --ymax 15 \
-  -o figures/ebv
+  -o pb_ebv
 ```
 
-<img align="center" width="700" src="figures/ebv_CAGE_support.png">
+<img align="center" width="700" src="pb_ebv_CAGE_support.png">
 
 ## Computational PAS analysis
 
@@ -260,22 +258,56 @@ See if TALON EBV transcript 3' ends are supported by poly-A recognition motifs.
 
 ```bash
 python run_computational_PAS_analysis.py \
-  --gtf ebv_talon_observedOnly_ebv.gtf \
+  --gtf ebv_talon_chrEBV.gtf \
   --genome ebv.fasta \
   --maxdist 35 \
-  --o ./ebv
+  --o ./pb_ebv
 
 Rscript plot_support_by_novelty_type.R \
-  --f ebv_polyA_motif.csv \
+  --f pb_ebv_polyA_motif.csv \
   --t PAS-comp \
-  --novelty transcript_beds/ebv_novelty.csv \
-  --ymax 15 \
+  --novelty transcript_beds/pb_ebv_novelty.csv \
+  --ymax 35 \
   --splitISM \
-  -o figures/ebv
+  -o pb_ebv
 ```
 
-<img align="center" width="700" src="figures/ebv_PAS-comp_support.png">
+<img align="center" width="700" src="pb_ebv_PAS-comp_support.png">
+
+## Do the same analysis for ONT
+```bash
+sed 's/chr1/chrEBV/g' ont_ebv_talon.gtf > ont_ebv_talon_chrEBV.gtf
+python run_CAGE_analysis.py \
+  --gtf ont_ebv_talon_chrEBV.gtf \
+  --cage cage_ebv_TSSs.bed \
+  --maxdist 100 \
+  --o ./ont_ebv
+
+Rscript plot_support_by_novelty_type.R \
+  --f ont_ebv_CAGE_results.csv \
+  --t CAGE \
+  --novelty transcript_beds/ont_ebv_novelty.csv \
+  --splitISM \
+  --ymax 75 \
+  -o ont_ebv
+
+python run_computational_PAS_analysis.py \
+  --gtf ont_ebv_talon_chrEBV.gtf \
+  --genome ebv.fasta \
+  --maxdist 35 \
+  --o ./ont_ebv
+
+Rscript plot_support_by_novelty_type.R \
+  --f ont_ebv_polyA_motif.csv \
+  --t PAS-comp \
+  --novelty transcript_beds/ont_ebv_novelty.csv \
+  --ymax 75 \
+  --splitISM \
+  -o ont_ebv
+```
+<img align="center" width="700" src="ont_ebv_CAGE_support.png">
+
+<img align="center" width="700" src="ont_ebv_PAS-comp_support.png">
 
 
 
- -->
