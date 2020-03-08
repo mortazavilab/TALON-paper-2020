@@ -66,13 +66,13 @@ main <-function() {
     # edgeR basics: 
     group <- factor(c("Illumina","Illumina","PacBio","PacBio")) # Indicate which group each col belongs to
     y <- DGEList(counts=merged_illumina_pacbio, group = group) # Create a DGEList object
+    design <- model.matrix(~group)
 
     # Filter out lowly expressed
-    keep <- filterByExpr(y)
+    keep <- filterByExpr(y, design)
     y <- y[keep, , keep.lib.sizes=FALSE]
 
     y <- calcNormFactors(y) # Normalize counts in the object
-    design <- model.matrix(~group)
     y <- estimateDisp(y,design)
 
     # Pairwise testing approach for DE Genes. "classic" edgeR
