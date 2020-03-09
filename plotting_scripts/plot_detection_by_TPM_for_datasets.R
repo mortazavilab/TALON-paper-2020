@@ -38,6 +38,8 @@ main <-function() {
     # Read in abundance file
     abundance_table <- as.data.frame(read_delim(opt$infile, delim = "\t",
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
+    # Remove genomic transcripts
+    abundance_table <- subset(abundance_table, transcript_novelty != "Genomic")
 
     # Get genes in each dataset
     d1_genes <- get_detected_genes_for_dataset(abundance_table, dataset_1)

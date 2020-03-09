@@ -41,6 +41,9 @@ main <-function() {
     # Keep known genes only
     pb_abundance <- subset(pb_abundance_orig, gene_novelty == "Known")
 
+    # Remove genomic transcripts
+    pb_abundance <- subset(pb_abundance, transcript_novelty != "Genomic")
+
     # Cut out unnecessary cols
     pb_abundance <- pb_abundance[, c("annot_gene_id", dataset1, dataset2)]
 
@@ -133,7 +136,7 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
          geom_point(alpha = 0.4, size = 2) +
          xlab(xlabel) + ylab(ylabel) + theme_bw() +
          coord_cartesian(xlim=c(-5,xmax), ylim = c(-1*ymax,ymax)) +
-         scale_color_manual(values = c("orange", fillcolor),
+         scale_color_manual(values = c(fillcolor, "orange"),
                                   labels = c(paste0("Significant (n = ", n_sig, ")"),
                                              paste0("Not significant (n = ", n_no_sig, ")"))) +
          theme(axis.text.x = element_text(color="black", size=22),
@@ -241,6 +244,7 @@ parse_options <- function() {
                 default = NULL, help = "Output directory for plots and outfiles"),
     make_option(c("--dtype"), action = "store", dest = "dtype",
                 default = "PacBio", help = "Datatype label to display on plot"))
+    
 
     opt <- parse_args(OptionParser(option_list=option_list))
     return(opt)
