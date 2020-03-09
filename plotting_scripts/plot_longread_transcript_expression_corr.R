@@ -47,7 +47,9 @@ main <-function() {
     merged_abundances$novelty <- factor(merged_abundances$novelty, levels = t_levels)
 
     # Plot expression scatterplots
-    expression_by_status(merged_abundances, d1, d2, opt$outdir, color_vec, opt$celltype, opt$lsr, opt$corr_labs, opt$regression_line, d1_type, d2_type)
+    expression_by_status(merged_abundances, d1, d2, opt$outdir, color_vec, 
+                         opt$celltype, opt$lsr, opt$corr_labs, opt$regression_line, 
+                         d1_type, d2_type, opt$omit_legend)
 }
 
 filter_transcripts_on_options <- function(abundance_table, opt) {
@@ -132,7 +134,7 @@ filter_transcripts_on_options <- function(abundance_table, opt) {
     return(filtered)
 }
 
-expression_by_status <- function(merged_abundances, d1, d2, outdir, color_vec, celltype, lsr, corr_labs, regression_line, d1_type, d2_type) {
+expression_by_status <- function(merged_abundances, d1, d2, outdir, color_vec, celltype, lsr, corr_labs, regression_line, d1_type, d2_type, omit_legend) {
 
     # Take log2(TPM + 0.1)
     merged_abundances$data1.log_TPM = log(merged_abundances$data1.TPM + 0.1, base=10)
@@ -188,13 +190,19 @@ expression_by_status <- function(merged_abundances, d1, d2, outdir, color_vec, c
               axis.text.y = element_text(color = "black", size=24)) +
         scale_x_continuous(trans=log10_trans(), limits=c(0.1,36000))+
         scale_y_continuous(trans=log10_trans(), limits=c(0.1,36000))+
-        scale_colour_manual("Transcript status", values=color_vec) +
-        theme(legend.position=c(0.73,0.2),
-              legend.title = element_text(colour = 'black', size = 21),
-              legend.background = element_rect(fill="white", color = "black"),
-              legend.key = element_rect(fill="transparent"),
-              legend.text = element_text(colour = 'black', size = 20))+
-        guides(colour = guide_legend(override.aes = list(alpha=1, size=3)))
+        scale_colour_manual("Transcript status", values=color_vec)
+
+    # Add legend
+    if (omit_legend == FALSE) {
+        scatterplot <- scatterplot+ theme(legend.position=c(0.73,0.2),
+                             legend.title = element_text(colour = 'black', size = 21),
+                             legend.background = element_rect(fill="white", color = "black"),
+                             legend.key = element_rect(fill="transparent"),
+                             legend.text = element_text(colour = 'black', size = 20))+
+                         guides(colour = guide_legend(override.aes = list(alpha=1, size=3)))
+    } else {
+        scatterplot <- scatterplot + guides(colour=FALSE)
+    }
 
     # add regression line
     if (regression_line) {
@@ -331,7 +339,9 @@ parse_options <- function() {
         make_option("--correlations", action="store_true", dest = "corr_labs",
               help="Add correlation labels to plot", default = F),
         make_option("--regression_line", action="store_true", dest = "regression_line",
-              help="Add regression line to plot", default = F)
+              help="Add regression line to plot", default = F),
+        make_option("--omitLegend", action = "store_true", dest = "omit_legend",
+              help="Omit legend from plot", default = F)
         )
 
     opt <- parse_args(OptionParser(option_list=option_list))
