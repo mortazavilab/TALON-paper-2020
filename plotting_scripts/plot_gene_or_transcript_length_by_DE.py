@@ -12,6 +12,8 @@ def getOptions():
     parser.add_option("--platform", dest = "platform",
                       help = "Name of long-read sequencing platform",
                       default = "PacBio")
+    parser.add_option("--mode", dest = "mode",
+                      help = "gene or transcript")
     parser.add_option("--col", dest = "colname",
                       help = "Name of column in file to use for length",
                       default = "median_length")
@@ -25,7 +27,7 @@ def getOptions():
     (options, args) = parser.parse_args()
     return options
 
-def violin_plot(data, colname, ymax, fname):
+def violin_plot(data, colname, mode, ymax, fname):
     """ Plot a violin plot with the length of each read by novelty category"""
 
     sns.set_context("paper", font_scale=1.3)
@@ -57,7 +59,7 @@ def violin_plot(data, colname, ymax, fname):
     ax.legend().set_visible(False)
     ax.set_yscale("log", basey=10)
     plt.xlabel("")
-    plt.ylabel("Gene length (%s of transcripts)" % colname)
+    plt.ylabel("%s length (nt)" % (mode))
     #ymin = min(data.groupby(['transcript_novelty'])['read_length'].min().values)
     #plt.ylim(0, max(ypos)*1.1)
     plt.tight_layout()
@@ -93,8 +95,8 @@ def main():
     data = data.replace("lower", lower)
     print(data.groupby("DE_type").size())
 
-    fname = options.outprefix + "DE_gene_length_by_" + options.colname + ".png"
-    violin_plot(data, options.colname, options.ymax, fname)
+    fname = options.outprefix + "DE_" + options.mode + "_" + options.colname + ".png"
+    violin_plot(data, options.colname, options.mode, options.ymax, fname)
 
     print(data.loc[data[options.colname].idxmax()])
 
