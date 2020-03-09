@@ -159,8 +159,8 @@ expression_by_status <- function(merged_abundances, d1, d2, outdir, color_vec, c
     fname <- paste(joined_names, "transcript", "correlationPlot.png", sep="_")
     corr_fname <- paste(joined_names, "transcript", "correlations.txt", sep="_")
 
-    xlabel <- paste("TPM+0.1 in ", celltype, " ", d1_type, sep="")
-    ylabel <- paste("TPM+0.1 in ", celltype, " ", d2_type, sep="")
+    xlabel <- paste("CPM+0.1 in ", celltype, " ", d1_type, sep="")
+    ylabel <- paste("CPM+0.1 in ", celltype, " ", d2_type, sep="")
     corr_label <- paste("Pearson r: ",
                             round(pearsonCorr, 2), "\nSpearman rho: ",
                             round(spearmanCorr, 2), "\nLSR slope: ",

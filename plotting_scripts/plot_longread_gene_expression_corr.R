@@ -113,8 +113,8 @@ expression_by_status <- function(merged_abundances, d1, d2, options, outdir,
     fname <- paste(joined_names, "gene", "correlationPlot.png", sep="_")
     corr_fname <- paste(joined_names, "gene", "correlations.txt", sep="_")
 
-    xlabel <- paste("TPM+0.1 in ", celltype, " ", d1_type, sep="")
-    ylabel <- paste("TPM+0.1 in ", celltype, " ", d2_type, sep="")
+    xlabel <- paste("CPM+0.1 in ", celltype, " ", d1_type, sep="")
+    ylabel <- paste("CPM+0.1 in ", celltype, " ", d2_type, sep="")
     corr_label <- paste("Pearson r: ",
                             round(pearsonCorr, 2), "\nSpearman rho: ",
                             round(spearmanCorr, 2), "\nLSR slope: ",
@@ -152,12 +152,6 @@ expression_by_status <- function(merged_abundances, d1, d2, options, outdir,
                          scale_x_continuous(trans=log10_trans(), limits=c(0.1,32768))+
                          scale_y_continuous(trans=log10_trans(), limits=c(0.1,32768)) +
                          scale_colour_manual("Gene status", values=color_vec)
-                         #theme(legend.position=c(0.73,0.2),
-                         #    legend.title = element_text(colour = 'black', size = 21),
-                         #    legend.background = element_rect(fill="white", color = "black"),
-                         #    legend.key = element_rect(fill="transparent"),
-                         #    legend.text = element_text(colour = 'black', size = 20))+
-                         #guides(colour = guide_legend(override.aes = list(alpha=1, size=3)))
     # Add legend
     if (omit_legend == FALSE) {
         scatterplot <- scatterplot+ theme(legend.position=c(0.73,0.2),
