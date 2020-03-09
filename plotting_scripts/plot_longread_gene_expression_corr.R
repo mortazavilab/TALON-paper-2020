@@ -16,6 +16,11 @@ main <-function() {
     abundance_table <- as.data.frame(read_delim(opt$infile, delim = "\t",
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
+    # Remove genomic transcripts
+    abundance_table <- subset(abundance_table, transcript_novelty != "Genomic")
+
+    gene_names <- unique(abundance_table[,c("gene_ID", "annot_gene_name")])
+
     # Get dataset names and check that they exist in the file
     d1 <- opt$d1
     d2 <- opt$d2
@@ -71,11 +76,16 @@ main <-function() {
     merged_abundances$gene_novelty <- NULL
     merged_abundances$novelty <- factor(merged_abundances$novelty, levels = c("Known", "Antisense", "Intergenic"))
 
+    # Merge in human-readable gene names
+    merged_abundances <- merge(merged_abundances, gene_names, by = "gene_ID", all.x = T, all.y = F)
+
     # Plot expression scatterplots
-    expression_by_status(merged_abundances, d1, d2, opt, opt$outdir, color_vec, opt$celltype, opt$lsr, opt$corr_labs, opt$regression_line, d1_type, d2_type)
+    expression_by_status(merged_abundances, d1, d2, opt, opt$outdir, color_vec, opt$celltype, opt$lsr, opt$corr_labs, opt$regression_line, d1_type, d2_type, opt$omit_legend)
 }
 
-expression_by_status <- function(merged_abundances, d1, d2, options, outdir, color_vec, celltype, lsr, corr_labs, regression_line, d1_type, d2_type) {
+expression_by_status <- function(merged_abundances, d1, d2, options, outdir, 
+                                 color_vec, celltype, lsr, corr_labs, 
+                                 regression_line, d1_type, d2_type, omit_legend) {
 
     # Take log2(TPM + 0.1)
     merged_abundances$data1.log_TPM = log(merged_abundances$data1.TPM + 0.1, base=10)
@@ -127,6 +137,11 @@ expression_by_status <- function(merged_abundances, d1, d2, options, outdir, col
         width = 2700, height = 2500, units = "px",
         bg = "white",  res = 300)
 
+    merged_abundances$ratio <- (merged_abundances$data1.TPM + 0.1)/(merged_abundances$data2.TPM + 0.1)
+    write.table(merged_abundances[order(-merged_abundances$ratio),], paste(joined_names, "gene", "abd.tsv", sep="_"),
+                col.names = T, row.names = F, quote = F)
+    merged_abundances[merged_abundances$ratio < 100 & merged_abundances$data1.TPM  < 20, "annot_gene_name"] <- ""
+
     # Main scatterplot
     scatterplot = ggplot(merged_abundances, aes(x = data1.TPM+0.1, y = data2.TPM+0.1, color = novelty)) +
                          geom_point(alpha = 0.5) + theme_bw() +
@@ -135,14 +150,25 @@ expression_by_status <- function(merged_abundances, d1, d2, options, outdir, col
                          theme(axis.text.x = element_text(color = "black", size=24),
                                axis.text.y = element_text(color = "black", size=24)) +
                          scale_x_continuous(trans=log10_trans(), limits=c(0.1,32768))+
-                         scale_y_continuous(trans=log10_trans(), limits=c(0.1,32768))+
-                         scale_colour_manual("Gene status", values=color_vec) +
-                         theme(legend.position=c(0.73,0.2),
+                         scale_y_continuous(trans=log10_trans(), limits=c(0.1,32768)) +
+                         scale_colour_manual("Gene status", values=color_vec)
+                         #theme(legend.position=c(0.73,0.2),
+                         #    legend.title = element_text(colour = 'black', size = 21),
+                         #    legend.background = element_rect(fill="white", color = "black"),
+                         #    legend.key = element_rect(fill="transparent"),
+                         #    legend.text = element_text(colour = 'black', size = 20))+
+                         #guides(colour = guide_legend(override.aes = list(alpha=1, size=3)))
+    # Add legend
+    if (omit_legend == FALSE) {
+        scatterplot <- scatterplot+ theme(legend.position=c(0.73,0.2),
                              legend.title = element_text(colour = 'black', size = 21),
                              legend.background = element_rect(fill="white", color = "black"),
                              legend.key = element_rect(fill="transparent"),
                              legend.text = element_text(colour = 'black', size = 20))+
                          guides(colour = guide_legend(override.aes = list(alpha=1, size=3)))
+    } else {
+        scatterplot <- scatterplot + guides(colour=FALSE)
+    } 
 
     # add regression line
     if (regression_line) {
@@ -237,6 +263,7 @@ load_packages <- function() {
     suppressPackageStartupMessages(library("gridExtra"))
     suppressPackageStartupMessages(library("cowplot"))
     suppressPackageStartupMessages(library("scales"))
+    #suppressPackageStartupMessages(library("ggrepel"))
 
     return
 }
@@ -269,7 +296,9 @@ parse_options <- function() {
         make_option("--correlations", action = "store_true", dest = "corr_labs",
               help="Add correlation labels to plot", default = F),
         make_option("--regression_line", action = "store_true", dest = "regression_line",
-              help="Add regression line to plot", default = F)
+              help="Add regression line to plot", default = F),
+        make_option("--omitLegend", action = "store_true", dest = "omit_legend",
+              help="Omit legend from plot", default = F)
         )
 
     opt <- parse_args(OptionParser(option_list=option_list))
