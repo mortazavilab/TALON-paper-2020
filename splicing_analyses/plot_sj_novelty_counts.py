@@ -123,7 +123,7 @@ def extra_support_plot(counts, sup_counts, args):
 
 	# plotting
 	plt.figure(figsize=(8.5,8.5))
-	sns.set(font_scale=1.5, style="whitegrid")
+	sns.set(font_scale=2, style="whitegrid")
 	order = ['Known', 'NIC', 'NNC']
 
 	top_plot = sns.barplot(x='Novelty', y='total_percent', data=nov_counts, 
@@ -136,8 +136,8 @@ def extra_support_plot(counts, sup_counts, args):
 	bottombar = plt.Rectangle((0,0),1,1,fc='#0000A3',  edgecolor='black')
 
 	# plt.ylim(0, 20)
-	plt.title('{} Splice Junction Novelty with {} Support'.format(args.sample_name,
-		args.sup_name))
+	#plt.title('{} Splice Junction Novelty with {} Support'.format(args.sample_name,
+	#	args.sup_name))
 	bottom_plot.set_ylabel("Percent of Total SJs")
 	for ntype, p in zip(order, bottom_plot.patches):
 		height = p.get_height()
@@ -154,6 +154,8 @@ def extra_support_plot(counts, sup_counts, args):
 				'{:1.2f}%'.format(val),
 				ha="center")
 
+	plt.xlabel("Junction type")
+	plt.tight_layout()
 	plt.savefig('figures/'+args.sample_name.replace(' ','_')+'_sj_novelty_{}_support.pdf'.format(args.sup_name))
 	plt.savefig('figures/'+args.sample_name.replace(' ','_')+'_sj_novelty_{}_support.png'.format(args.sup_name), dpi = 600)
 
