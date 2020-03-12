@@ -113,3 +113,6 @@ Rscript ${PLOTPATH}/plot_novelty_category_read_counts_one_dataset.R \
          --o plots/
 ```
 <img align="center" width="400" src="plots/PB_GM12878_R1_reads_by_isoform_category.png">
+
+## Panel I: PacBio splice junction support from Illumina
+See splicing analysis [here](https://github.com/dewyman/TALON-paper-2020/tree/master/splicing_analyses) 
