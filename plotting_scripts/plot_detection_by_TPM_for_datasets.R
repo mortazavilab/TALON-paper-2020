@@ -59,7 +59,7 @@ main <-function() {
 }
 
 get_buckets <- function(illumina) {
-    intervals = c(0, 1, 2, seq(5, 20, 5), 50, 100, 500)
+    intervals = c(0, 1, 2, 5, 10, 50, 100, 500)
     illumina$group = cut(illumina$tpm, c(intervals, 100000000000))   
 
     cIntervals = as.character(intervals)
@@ -85,33 +85,43 @@ get_detection <- function(illumina, d1_items, d2_items, cat_type, dtype) {
 
 plot_detection <- function(illumina, cIntervals, cat_type, color_vec, outdir, dtype) {
 
-    # Plot the curves
+    # Compute number of genes per bin
+    totals <- illumina %>%
+        dplyr::group_by(group) %>%
+        dplyr::tally()
+    print(totals)
+
+    # Merge in to detection table
+    illumina <- merge(illumina, totals, by = "group", all.x = T, all.y = T)
+
+    # Plot 
     fname <- paste(outdir, "/", cat_type, "_detection_by_TPM.png", sep="")
     xlabel <- paste(capitalize(cat_type), "expression level in Illumina data (TPM)")
     ylabel <- paste("Fraction of ", cat_type, "s", sep="")
 
     png(filename = fname,
-        width = 2100, height = 2500, units = "px",
+        width = 2500, height = 2500, units = "px",
         bg = "white",  res = 300)
     g = ggplot(illumina, aes(x = group, fill = factor(detection, levels = c(paste0("Not detected in ", dtype),
                                                                             paste0("Detected in one ", dtype, " rep"), 
                                                                             paste0("Detected in both ", dtype, " reps"))))) +
        geom_bar(position = "fill", col = "black") + 
        scale_fill_manual("",values=color_vec)  + 
-       theme_bw() + 
+       theme_bw() +
+       coord_cartesian(ylim = c(0, 1.05)) + 
        scale_y_continuous(breaks=c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1)) + 
-       theme(axis.text.x = element_text(angle = 30, hjust = 1, color = "black", size=20)) + 
-       xlab(xlabel)  + ylab(ylabel) + theme(text= element_text(size=22)) + 
-       theme(axis.text.x = element_text(color = "black", size=21),
-             axis.text.y = element_text(color = "black", size=21)) + 
+       theme(axis.text.x = element_text(angle = 30, hjust = 1, color = "black", size=26)) + 
+       xlab(xlabel)  + ylab(ylabel) + theme(text= element_text(size=26)) + 
+       theme(axis.text.x = element_text(color = "black", size=24),
+             axis.text.y = element_text(color = "black", size=24)) + 
        scale_x_discrete(labels=cIntervals) + 
        theme(legend.position=c(0.6,0.2),
               legend.title = element_blank(),
               legend.background = element_rect(fill="white", color = "black"),
               legend.key = element_rect(fill="transparent"),
-              legend.text = element_text(colour = 'black', size = 20),
-              plot.margin = margin(t = 0.5, r = 1.5, l = 0.5, b = 0.5, "cm"))
-
+              legend.text = element_text(colour = 'black', size = 24),
+              plot.margin = margin(t = 0.5, r = 1.5, l = 0.5, b = 0.5, "cm")) +
+        geom_text(aes(x= group, y = 1, label=n), vjust=-1, size = 7)
     print(g)
     dev.off()
 }
