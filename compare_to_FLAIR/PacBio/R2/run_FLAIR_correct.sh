@@ -16,7 +16,7 @@ query=flair.aligned.bed
 chromSizes=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/refs/hg38_SIRV/hg38_SIRV.chromSizes
 genome=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/refs/hg38_SIRV/hg38_SIRV.fa
 
-python ../../flair-1.4/flair.py correct -f $gtf \
+python ~/flair/flair.py correct -f $gtf \
                               -q $query \
                               -t 16 \
                               -c $chromSizes \
