@@ -112,17 +112,17 @@ def plot_fraction_internal_primed_per_category(data, outprefix, a_frac):
     n_cats = len(set(list(primed_per_cat.transcript_novelty)))
     x_range = np.arange(1, 10*n_cats, 10) # x locations
     width = 6.2       # the width of the bars
-    plt.rcParams.update({'font.size': 12, 'font.family': 'sans-serif',
+    plt.rcParams.update({'font.size': 15, 'font.family': 'sans-serif',
                          'hatch.linewidth': 5})
     fig, ax = plt.subplots()
- 
+
     # Plot the bars one category at a time
     range_index = 0
     cats = []
     offset = max(primed_per_cat['total'])*0.01
     for novelty in cat_order:
         subdata = primed_per_cat.loc[primed_per_cat['transcript_novelty'] == novelty]
-
+        
         if len(subdata) == 0:
             continue
 
@@ -140,7 +140,7 @@ def plot_fraction_internal_primed_per_category(data, outprefix, a_frac):
                         width = width, 
                         color = 'white', edgecolor=[novelty_colors[novelty]], 
                         bottom = subdata.loc[subdata.internal_primed == True, 'count'])
-    
+         
         try:
           percent_ip = round(list(subdata.loc[subdata.internal_primed == True, 'percent'])[0],1)
         except: percent_ip = 0.0
@@ -149,7 +149,7 @@ def plot_fraction_internal_primed_per_category(data, outprefix, a_frac):
                  str(percent_ip) + "%", 
                  color = novelty_colors[novelty], ha="center")
         cats.append(ip)
-      
+  
     #plt.title('Number of reads with internal priming by novelty category')
     plt.xlabel('Category')
     plt.ylabel('Number of reads')
