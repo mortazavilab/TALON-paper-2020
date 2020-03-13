@@ -48,7 +48,8 @@ main <-function() {
         color_vec <- color_vec[-length(color_vec)]
         abundance_table <- subset(abundance_table, 
                                   gene_novelty != "Intergenic")
-    } 
+    }
+    abundance_table <- subset(abundance_table, gene_novelty != "Novel")
 
     # Compute gene TPMs for each dataset
     d1_abundance <- abundance_table[,c("gene_ID", d1)]
@@ -80,13 +81,16 @@ main <-function() {
     merged_abundances <- merge(merged_abundances, gene_names, by = "gene_ID", all.x = T, all.y = F)
 
     # Plot expression scatterplots
-    expression_by_status(merged_abundances, d1, d2, opt, opt$outdir, color_vec, opt$celltype, opt$lsr, opt$corr_labs, opt$regression_line, d1_type, d2_type, opt$omit_legend)
+    expression_by_status(merged_abundances, d1, d2, opt, opt$outdir, 
+                         color_vec, opt$celltype, opt$lsr, opt$corr_labs, 
+                         opt$regression_line, d1_type, d2_type, opt$omit_legend)
 }
 
 expression_by_status <- function(merged_abundances, d1, d2, options, outdir, 
                                  color_vec, celltype, lsr, corr_labs, 
                                  regression_line, d1_type, d2_type, omit_legend) {
 
+    print(head(merged_abundances))
     # Take log2(TPM + 0.1)
     merged_abundances$data1.log_TPM = log(merged_abundances$data1.TPM + 0.1, base=10)
     merged_abundances$data2.log_TPM = log(merged_abundances$data2.TPM + 0.1, base=10)
