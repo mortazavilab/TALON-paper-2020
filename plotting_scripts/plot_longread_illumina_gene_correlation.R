@@ -105,6 +105,9 @@ process_longread_data <- function(opt) {
     abundance_table <- as.data.frame(read_delim(opt$infile, delim = "\t",
                                   col_names = TRUE, trim_ws = TRUE, na = "NA"))
 
+    # Remove genomic
+    abundance_table <- subset(abundance_table, transcript_novelty != "Genomic")
+
     # Get dataset name and check that it exists in the file
     d1 <- opt$r1
     d2 <- opt$r2

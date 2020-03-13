@@ -22,6 +22,7 @@ Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
           --celltype GM12878 \
           --d1_type 'Rep1 PacBio' \
           --d2_type 'Rep2 PacBio' \
+          --omitLegend \
           -o plots/
 ```
 <img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_gene_correlationPlot.png">
@@ -72,6 +73,7 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
          --d2 PB_GM12878_R2 \
          --d2_type 'Rep2 PacBio' \
          --celltype GM12878 \
+         --omitLegend \
          -o plots/
 ```
 <img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_Known_transcript_correlationPlot.png">
@@ -111,3 +113,6 @@ Rscript ${PLOTPATH}/plot_novelty_category_read_counts_one_dataset.R \
          --o plots/
 ```
 <img align="center" width="400" src="plots/PB_GM12878_R1_reads_by_isoform_category.png">
+
+## Panel I: PacBio splice junction support from Illumina
+See splicing analysis [here](https://github.com/dewyman/TALON-paper-2020/tree/master/splicing_analyses) 

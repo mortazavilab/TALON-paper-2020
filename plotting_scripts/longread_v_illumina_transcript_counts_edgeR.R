@@ -125,24 +125,25 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
         bg = "white",  res = 300)
 
     print(head(data))
+    data$status <- factor(data$status, levels = c("significant", "not_sig"))
 
     g <- ggplot(data, aes(x=logCPM, y=logFC, color = status)) +
          geom_point(alpha = 0.4, size = 2) +
          xlab(xlabel) + ylab(ylabel) + theme_bw() +
          coord_cartesian(xlim=c(-5,xmax), ylim = c(-1*ymax,ymax)) +
-         scale_color_manual(values = c(fillcolor, "orange"),
-                                  labels = c(paste0("Significant (n = ", n_sig, ")"),
-                                             paste0("Not significant (n = ", n_no_sig, ")"))) +
-         theme(axis.text.x = element_text(color="black", size=22),
-               axis.text.y = element_text(color="black", size=22),
-               axis.title.x = element_text(color="black", size=22),
-               axis.title.y = element_text(color="black", size=22)) +
-         guides(colour = guide_legend(override.aes = list(alpha=1,size=2.5))) +
-         theme(legend.position=c(0.25,0.1),
+         scale_color_manual(values = c("orange", fillcolor),
+                                  labels = c(paste0("Significant (n=", n_sig, ")"),
+                                             paste0("Not sig. (n=", n_no_sig, ")"))) +
+         theme(axis.text.x = element_text(color="black", size=24),
+               axis.text.y = element_text(color="black", size=24),
+               axis.title.x = element_text(color="black", size=24),
+               axis.title.y = element_text(color="black", size=24)) +
+         guides(colour = guide_legend(override.aes = list(alpha=1,size=3))) +
+         theme(legend.position=c(0.27,0.08),
                      legend.title = element_blank(),
                      legend.background = element_rect(fill="white", color = "black"),
                      legend.key = element_rect(fill="transparent"),
-                     legend.text = element_text(colour = 'black', size = 18))
+                     legend.text = element_text(colour = 'black', size = 24))
 
     print(g)
     dev.off()
