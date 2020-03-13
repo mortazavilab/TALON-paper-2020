@@ -89,71 +89,68 @@ def write_track(key, gtffile, fname, colors_dict, url):
 parser = argparse.ArgumentParser(description=\
     'Separates a gtf file into novelty classifications and'+\
     ' generates a text file with track information to paste into genome browser')
-parser.add_argument('--c', help='CSV config file with conversion options.'+\
-    ' field 1: gtf file to separate'+\
-    ' field 2: n=binary (known v. novel) n+=multiclass novelty conversion'+\
-    ' field 3: combine ISMS 1 = true, 0 = false'+\
-    ' field 4: public-facing directory to move files to'+\
-    ' field 5: url prefix for the data to write to track file')
+parser.add_argument('-gtf', help='gtf file')
+parser.add_argument('-novelty', help="'n' to only indicate known/novel or 'n+' "
+    "to indicate all novelty types.")
+parser.add_argument('-combine_isms', help='1 to only include ISM category, 0 '
+    'to include ISM suffix and ISM prefix categories')
+parser.add_argument('-url', help='URL prefix for the public-facing directory '
+    'from which to upload your gtfs to the genome browser')
+
 args = parser.parse_args()
 
-# obtain arguments from config file
-cfile = open(args.c, 'r')
-for ind, line in enumerate(cfile):
-    line = line.replace('\n', '').split(',')
+# obtain arguments 
+# arguments from config file
+gtffile = args.gtf
+sep_type = args.novelty
+if sep_type != 'n' and sep_type != 'n+':
+    print('Incorrect option for separation type given. Please choose n or n+.')
+    exit()
+combine_isms = bool(int(args.combine_isms))
+temp = os.path.dirname(gtffile)
+odir = format_odir(temp)
+odir = make_dated_folder(odir, get_basename(gtffile))
+odir = odir + get_basename(gtffile)+'_'
+url = line[4]
+if url[-1] != '/':
+    url += '/'
 
-    # arguments from config file
-    gtffile = line[0]
-    sep_type = line[1]
-    if sep_type != 'n' and sep_type != 'n+':
-        print('Incorrect option for separation type given. Please choose n or n+.')
-        exit()
-    combine_isms = bool(int(line[2]))
-    pubdir = format_odir(line[3])
-    temp = os.path.dirname(gtffile)
-    odir = format_odir(temp)
-    odir = make_dated_folder(odir, get_basename(gtffile))
-    odir = odir + get_basename(gtffile)+'_'
-    url = line[4]
-    if url[-1] != '/':
-        url += '/'
+# where to output final tracks to
+if not ind:
+    # custom tracks file    
+    tfile = odir+sep_type+'_tracks'
+    # print(tfile)
+    tfile = open(tfile, 'w')
 
-    # where to output final tracks to
-    if not ind:
-        # custom tracks file    
-        tfile = odir+sep_type+'_tracks'
-        # print(tfile)
-        tfile = open(tfile, 'w')
+# classes to look for and their associated colors
+if sep_type == 'n':
+    classes = ['KNOWN', 'NOVEL']
+    colors = ['0,158,115', '230,159,0']
+elif sep_type == 'n+':
+    if not combine_isms:
+        classes = ['KNOWN', 'ISM_transcript',\
+                   'ISM-prefix_transcript', 'ISM-suffix_transcript',\
+                   'NIC_transcript', 'NNC_transcript',\
+                   'genomic_transcript','antisense_transcript','intergenic_transcript']
+        colors = ['0,158,115','0,114,178','86,180,233','105,139,172',\
+                  '213,94,0','230,159,0','240,228,66','0,0,0','204,121,167']
+    else:
+        classes = ['KNOWN', 'ISM_transcript',\
+                   'NIC_transcript', 'NNC_transcript',\
+                   'genomic_transcript','antisense_transcript','intergenic_transcript']
+        colors = ['0,158,115','0,114,178',\
+                  '213,94,0','230,159,0','240,228,66','0,0,0','204,121,167']
 
-    # classes to look for and their associated colors
-    if sep_type == 'n':
-        classes = ['KNOWN', 'NOVEL']
-        colors = ['0,158,115', '230,159,0']
-    elif sep_type == 'n+':
-        if not combine_isms:
-            classes = ['KNOWN', 'ISM_transcript',\
-                       'ISM-prefix_transcript', 'ISM-suffix_transcript',\
-                       'NIC_transcript', 'NNC_transcript',\
-                       'genomic_transcript','antisense_transcript','intergenic_transcript']
-            colors = ['0,158,115','0,114,178','86,180,233','105,139,172',\
-                      '213,94,0','230,159,0','240,228,66','0,0,0','204,121,167']
-        else:
-            classes = ['KNOWN', 'ISM_transcript',\
-                       'NIC_transcript', 'NNC_transcript',\
-                       'genomic_transcript','antisense_transcript','intergenic_transcript']
-            colors = ['0,158,115','0,114,178',\
-                      '213,94,0','230,159,0','240,228,66','0,0,0','204,121,167']
-
-    # class-specific dictionaries
-    ofiles = defaultdict() # file handles and later file names
-    colors_dict = defaultdict() # colors for each class
-    gene_written = defaultdict(bool) # has gene line for that novelty file been written
-    transcript_class = defaultdict(bool) # whether the current transcript is of that class
-    for i, c in enumerate(classes):
-        colors_dict[c] = colors[i]
-        gene_written[c] = False 
-        transcript_class[c] = False
-        ofiles[c] = open(odir+c+'.gtf', 'w')
+# class-specific dictionaries
+ofiles = defaultdict() # file handles and later file names
+colors_dict = defaultdict() # colors for each class
+gene_written = defaultdict(bool) # has gene line for that novelty file been written
+transcript_class = defaultdict(bool) # whether the current transcript is of that class
+for i, c in enumerate(classes):
+    colors_dict[c] = colors[i]
+    gene_written[c] = False 
+    transcript_class[c] = False
+    ofiles[c] = open(odir+c+'.gtf', 'w')
 
 infile = open(gtffile, 'r')
 # print(infile.name)
@@ -216,27 +213,25 @@ for line in infile:
 ofiles = close_file_dict(ofiles)
 infile.close()
 
-# pprint.pprint(ofiles)
-
 # generate trackfile
 for c, fname in ofiles.items():
     s = write_track(c, gtffile, get_basename(fname)+'.gtf', colors_dict, url)
     tfile.write(s+'\n')
     # print(fname)
 
-# move into odir if it exists
-if os.path.isdir(pubdir):
-    for _, ofile in ofiles.items():
-        shutil.copy(ofile, pubdir)
+# # move into odir if it exists
+# if os.path.isdir(pubdir):
+#     for _, ofile in ofiles.items():
+#         shutil.copy(ofile, pubdir)
 
-        # copy trackfile too but close first
-        tfile_name = tfile.name
-        tfile.close()
-        shutil.copy(tfile_name, pubdir)
-else:
-    print('Public dir '+pubdir+' does not exist.'+\
-          ' Run move_tracks.py or manually move files.') 
-    tfile.close()
+#         # copy trackfile too but close first
+#         tfile_name = tfile.name
+#         tfile.close()
+#         shutil.copy(tfile_name, pubdir)
+# else:
+#     print('Public dir '+pubdir+' does not exist.'+\
+#           ' Run move_tracks.py or manually move files.') 
+#     tfile.close()
 
 # close config file
 cfile.close()
