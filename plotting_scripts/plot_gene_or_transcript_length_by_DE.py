@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from optparse import OptionParser
 import numpy as np
+#from statannot import add_stat_annotation
 
 def getOptions():
     parser = OptionParser()
@@ -33,10 +34,10 @@ def violin_plot(data, colname, mode, ymax, fname):
     sns.set_context("paper", font_scale=1.3)
     #ax = sns.stripplot(x='transcript_novelty', y='read_length', data=data, color="grey", jitter = True)
 
-    #data.transcript_novelty = data.transcript_novelty.astype("category")
-    #data.transcript_novelty.cat.set_categories(cat_order, inplace=True)
-    #data = data.sort_values(["transcript_novelty"])
-    ax = sns.boxplot(x='DE_type', y=colname, data=data)
+    ax = sns.boxplot(x='DE_type', y=colname, data=data, palette = "Blues")
+    #add_stat_annotation(ax, data=data, x='DE_type', y=colname,
+    #                box_pairs=[("Higher in Illumina", "Higher in PacBio")],
+    #                test='Mann-Whitney', text_format='star', loc='outside', verbose=2)
 
     #ax = sns.violinplot(x='DE_type', y=colname, legend = False,
     #                    data=data,
@@ -53,7 +54,7 @@ def violin_plot(data, colname, mode, ymax, fname):
     ypos = data.groupby(['DE_type'])[colname].max().dropna().values
     pos = range(len(nobs))
     for tick,label in zip(pos,ax.get_xticklabels()):
-        ax.text(pos[tick], ypos[tick] + 500, nobs[tick],
+        ax.text(pos[tick], ypos[tick] + ypos[tick]*0.1, nobs[tick],
         horizontalalignment='center', size='x-small', color='black', weight='semibold')
 
     ax.legend().set_visible(False)
