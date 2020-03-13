@@ -113,8 +113,8 @@ expression_by_status <- function(merged_abundances, d1, d2, options, outdir,
     fname <- paste(joined_names, "gene", "correlationPlot.png", sep="_")
     corr_fname <- paste(joined_names, "gene", "correlations.txt", sep="_")
 
-    xlabel <- paste("CPM+0.1 in ", celltype, " ", d1_type, sep="")
-    ylabel <- paste("CPM+0.1 in ", celltype, " ", d2_type, sep="")
+    xlabel <- paste("TPM+0.1 in ", celltype, " ", d1_type, sep="")
+    ylabel <- paste("TPM+0.1 in ", celltype, " ", d2_type, sep="")
     corr_label <- paste("Pearson r: ",
                             round(pearsonCorr, 2), "\nSpearman rho: ",
                             round(spearmanCorr, 2), "\nLSR slope: ",
