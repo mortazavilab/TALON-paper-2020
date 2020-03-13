@@ -127,6 +127,8 @@ filter_transcripts_on_options <- function(abundance_table, opt) {
         color_vec <- c(color_vec, yellow)
         t_levels <- c(t_levels, "Genomic")
     }
+    abundance_table <- subset(abundance_table,
+                                  transcript_novelty != "Novel")
 
    
     filtered <- list(abundance_table, color_vec, t_levels)
