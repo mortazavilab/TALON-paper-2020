@@ -90,15 +90,6 @@ Rscript ${PLOTPATH}/plot_discovery_curve_knownOnly.R \
 This script call also creates the file: figures/gene_detection.csv, which is needed for Panel C.
 <img align="center" width="600" src="figures/discovery_curves_genes_knownOnly.png">
 
-## Panel C: GC content of known genes that were detected in at least one of four PacBio replicates, versus those that were detected in short reads only.
-```bash
-python ../GC-content/run_GC_analysis.py \
-    --genes figures/gene_detection.csv \
-    --fasta ../refs/gencode.v29.transcripts.fa.gz \
-    --o figures
-```
-<img align="center" width="600" src="figures/GC_plot.png"> -->
-
 ## Known gene expression correlation between long read platforms and Illumina
 ### PacBio
 ```
