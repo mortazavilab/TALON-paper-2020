@@ -35,3 +35,9 @@ python ${PLOTPATH}/plot_GC_content_by_DE.py \
     --o plots/
 ```
 
+p-value annotation legend:
+ns: 5.00e-02 < p <= 1.00e+00
+*: 1.00e-02 < p <= 5.00e-02
+**: 1.00e-03 < p <= 1.00e-02
+***: 1.00e-04 < p <= 1.00e-03
+****: p <= 1.00e-04

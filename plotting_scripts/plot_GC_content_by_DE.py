@@ -6,7 +6,7 @@ import numpy as np
 from Bio import SeqIO
 from Bio.SeqUtils import GC
 import gzip
-#from statannot import add_stat_annotation
+from statannot import add_stat_annotation
 
 def getOptions():
     parser = OptionParser()
@@ -31,12 +31,16 @@ def violin_plot(data, colname, ymax, fname):
     """ Plot a violin plot with the length of each read by novelty category"""
 
     sns.set_context("paper", font_scale=1.3)
-    #ax = sns.stripplot(x='transcript_novelty', y='read_length', data=data, color="grey", jitter = True)
+    ax = sns.stripplot(x='DE_type', y=colname, data=data, color="black", 
+                       alpha = 0.5, size = 1.5, jitter = True)
 
     ax = sns.boxplot(x='DE_type', y=colname, data=data, palette = "Blues")
-    #add_stat_annotation(ax, data=data, x='DE_type', y=colname,
-    #                box_pairs=[("Higher in Illumina", "Higher in PacBio")],
-    #                test='Mann-Whitney', text_format='star', loc='outside', verbose=2)
+
+    add_stat_annotation(ax, data=data, x='DE_type', y=colname,
+                    box_pairs=[("Higher in Illumina", "Higher in PacBio"),
+                               ("Higher in Illumina", "Not DE"),
+                               ("Higher in PacBio", "Not DE")],
+                    test='Mann-Whitney', text_format='star', loc='outside', verbose=2)
 
     #ax = sns.violinplot(x='DE_type', y=colname, legend = False,
     #                    data=data,
