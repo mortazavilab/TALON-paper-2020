@@ -78,3 +78,10 @@ Rscript ../compare_TALON_FLAIR_detection_to_Illumina.R \
     --ik2 ../../Illumina/GM12878/Kallisto/Rep2/abundance.tsv \
     -o plots
 ```
+
+7. Get the number of known transcripts detected in TALON, FLAIR, and both
+```
+python ../compare_known_transcripts.py \
+   --f counts_matrix_talon_abd.tsv \
+   --t /share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/ont_talon_abundance_filtered.tsv
+```

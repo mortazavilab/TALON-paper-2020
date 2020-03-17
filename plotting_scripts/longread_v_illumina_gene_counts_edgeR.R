@@ -90,7 +90,7 @@ main <-function() {
 
     # Adjust p-values
     illumina_PB_et$adj_pval <- p.adjust(illumina_PB_et$PValue, method = "bonferroni")
-    illumina_PB_et$status <- as.factor(ifelse(abs(illumina_PB_et$logFC) > 1 & illumina_PB_et$adj_pval <= 0.01,
+    illumina_PB_et$status <- as.factor(ifelse(abs(illumina_PB_et$logFC) > 1 & illumina_PB_et$adj_pval < 0.01,
                              "significant", "not_sig"))
 
     # MA plot
@@ -111,6 +111,7 @@ main <-function() {
     illumina_PB_et <- merge(illumina_PB_et, lengths, by.x = "gene_id",
                             by.y = "g_ID", all.x = T, all.y = F)
 
+
     illumina_PB_et <- illumina_PB_et[order(illumina_PB_et$adj_pval),]
     write.table(illumina_PB_et, 
                 paste(opt$outdir, "/edgeR_", dtype, "_illumina_gene_counts.tsv", sep=""),
@@ -123,7 +124,7 @@ ma_plot <- function(data, fillcolor, outdir, dtype, xmax, ymax) {
     n_no_sig <- length(data$status[data$status == "not_sig"])
 
     fname <- paste(outdir, "/edgeR_", dtype, "_illumina_gene_counts_MA_plot.png", sep="")
-    xlabel <- "log2(Counts per million)"
+    xlabel <- "log2(CPM)"
     ylabel <- paste0(dtype, " to Illumina log2-fold change")
 
     png(filename = fname,

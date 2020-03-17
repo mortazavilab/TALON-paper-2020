@@ -26,3 +26,18 @@ python $PLOTPATH/plot_gene_or_transcript_length_by_DE.py \
     --platform PacBio \
     --o plots/
 ```
+
+GC content by DE category
+```
+python ${PLOTPATH}/plot_GC_content_by_DE.py \
+    --f ../plots/edgeR_PacBio_illumina_gene_counts.tsv \
+    --s ../../refs/GENCODE_v29/gencode.v29.transcripts.fa.gz \
+    --o plots/
+```
+
+p-value annotation legend:
+ns: 5.00e-02 < p <= 1.00e+00
+*: 1.00e-02 < p <= 5.00e-02
+**: 1.00e-03 < p <= 1.00e-02
+***: 1.00e-04 < p <= 1.00e-03
+****: p <= 1.00e-04

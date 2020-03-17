@@ -10,7 +10,8 @@ kallisto1=../Illumina/GM12878/Kallisto/Rep1/abundance.tsv
 kallisto2=../Illumina/GM12878/Kallisto/Rep2/abundance.tsv
 ```
 Software versions:
-* R v3.5.1  
+* R v3.6.0
+* edgeR v3.28.1 
 
 ## Panel A: Expression level of known genes (GENCODE v29) in each biological replicate of GM12878
 ```

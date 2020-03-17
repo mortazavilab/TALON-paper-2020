@@ -3,7 +3,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from optparse import OptionParser
 import numpy as np
-#from statannot import add_stat_annotation
+from Bio import SeqIO
+from Bio.SeqUtils import GC
+import gzip
+from statannot import add_stat_annotation
 
 def getOptions():
     parser = OptionParser()
@@ -13,14 +16,10 @@ def getOptions():
     parser.add_option("--platform", dest = "platform",
                       help = "Name of long-read sequencing platform",
                       default = "PacBio")
-    parser.add_option("--mode", dest = "mode",
-                      help = "gene or transcript")
-    parser.add_option("--col", dest = "colname",
-                      help = "Name of column in file to use for length",
-                      default = "median_length")
-    parser.add_option("--ymax", dest = "ymax",
-                      help = "Max value for y axis.",
-                      default = 10)
+    parser.add_option("--s", dest = "fasta",
+                      help = "FASTA file of sequences fro known transcripts")
+    parser.add_option("--ymax", dest = "ymax", type = float,
+                      help = "Max value for y axis.")
     parser.add_option("--o", dest = "outprefix",
                       help = "Prefix for plot filename", metavar = "FILE",
                       type = "string")
@@ -28,16 +27,20 @@ def getOptions():
     (options, args) = parser.parse_args()
     return options
 
-def violin_plot(data, colname, mode, ymax, fname):
+def violin_plot(data, colname, ymax, fname):
     """ Plot a violin plot with the length of each read by novelty category"""
 
     sns.set_context("paper", font_scale=1.3)
-    #ax = sns.stripplot(x='transcript_novelty', y='read_length', data=data, color="grey", jitter = True)
+    ax = sns.stripplot(x='DE_type', y=colname, data=data, color="black", 
+                       alpha = 0.5, size = 1.5, jitter = True)
 
     ax = sns.boxplot(x='DE_type', y=colname, data=data, palette = "Blues")
-    #add_stat_annotation(ax, data=data, x='DE_type', y=colname,
-    #                box_pairs=[("Higher in Illumina", "Higher in PacBio")],
-    #                test='Mann-Whitney', text_format='star', loc='outside', verbose=2)
+
+    add_stat_annotation(ax, data=data, x='DE_type', y=colname,
+                    box_pairs=[("Higher in Illumina", "Higher in PacBio"),
+                               ("Higher in Illumina", "Not DE"),
+                               ("Higher in PacBio", "Not DE")],
+                    test='Mann-Whitney', text_format='star', loc='outside', verbose=2)
 
     #ax = sns.violinplot(x='DE_type', y=colname, legend = False,
     #                    data=data,
@@ -58,11 +61,10 @@ def violin_plot(data, colname, mode, ymax, fname):
         horizontalalignment='center', size='x-small', color='black', weight='semibold')
 
     ax.legend().set_visible(False)
-    ax.set_yscale("log", basey=10)
     plt.xlabel("")
-    plt.ylabel("%s length (nt)" % (mode))
+    plt.ylabel("GC percentage of gene")
     #ymin = min(data.groupby(['transcript_novelty'])['read_length'].min().values)
-    #plt.ylim(0, max(ypos)*1.1)
+    plt.ylim(0, 100)
     plt.tight_layout()
     plt.savefig(fname, dpi = 600, bbox_inches='tight')
     plt.close()
@@ -81,6 +83,38 @@ def label_DE(row):
     else:
         raise ValueError("Unexpected value in 'status' column")
 
+def compute_all_GCs(fasta):
+    """ For each fasta transcript:
+          1) Extract gene name
+          2) Compute GC content of sequence
+          3) Record gene name, transcript ID, and GC content in pandas df.
+    """
+    gene_names = []
+    transcript_IDs = []
+    GC_content = []
+
+    try:
+        with gzip.open(fasta, "rt") as handle:
+            for record in SeqIO.parse(handle, "fasta"):
+                split_ID = (record.id).split("|")
+                gene_name = split_ID[5]
+                transcript_ID = split_ID[0]
+
+                gene_names.append(gene_name)
+                transcript_IDs.append(transcript_ID)
+                GC_content.append(GC(record.seq))
+               
+    except Exception as e:
+        print(e)
+        sys.exit("Problem reading fasta sequence file. Expecting gzipped file")
+
+    # Convert lists into a pandas data frame
+    df = pd.DataFrame({"gene": gene_names, 
+                       "transcript_ID": transcript_IDs, 
+                       "GC": GC_content})
+  
+    return df
+
 def main():
     options = getOptions()
 
@@ -96,10 +130,16 @@ def main():
     data = data.replace("lower", lower)
     print(data.groupby("DE_type").size())
 
-    fname = options.outprefix + "DE_" + options.mode + "_" + options.colname + ".png"
-    violin_plot(data, options.colname, options.mode, options.ymax, fname)
+    # Read fasta file and compute GC content of entries 
+    GC_table = compute_all_GCs(options.fasta)
+    median_GC = GC_table.groupby("gene").median()
 
-    print(data.loc[data[options.colname].idxmax()])
+    # Merge data
+    data = pd.merge(data, median_GC, on = "gene", how = "left")
+
+    fname = options.outprefix + "DE_median_gene_GC-content.png"
+    violin_plot(data, "GC", options.ymax, fname)
+
 
 if __name__ == '__main__':
     main()
