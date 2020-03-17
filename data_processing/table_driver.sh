@@ -159,6 +159,19 @@ head -1 pb_ont_talon_abundance_filtered.tsv > pb_ont_ercc_talon_abundance_filter
 grep gSpikein_ERCC pb_ont_talon_abundance_filtered.tsv >> pb_ont_ercc_talon_abundance_filtered.tsv
 mv pb_ont_talon_abundance_filtered_no_sirv_no_ercc.tsv pb_ont_talon_abundance_filtered.tsv
 
+# create a filtered GTF
+talon_create_GTF \
+	--db $db \
+	-b hg38_SIRV \
+	--a gencode_v29_SIRV \
+	--whitelist pb_ont_whitelist.csv \
+	-d pb_ont_datasets \
+	--o pb_ont
+cp pb_ont_talon.gtf backup/
+grep -v 'SIRV\|gSpikein_ERCC' pb_ont_talon.gtf > pb_ont_talon_no_sirv_no_ercc.gtf
+grep SIRV pb_ont_talon.gtf > pb_ont_sirv_talon.gtf
+grep gSpikein_ERCC pb_ont_talon.gtf > pb_ont_ercc_talon.gtf
+mv pb_ont_talon_no_sirv_no_ercc.gtf pb_ont_talon.gtf
 
 
 
