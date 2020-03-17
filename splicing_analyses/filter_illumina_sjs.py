@@ -67,7 +67,7 @@ def main():
 
 	df = filter_dfs(df1, df2)
 
-	df.to_csv(args.sj_1.replace('Rep1_', ''),
+	df.to_csv(args.sj_1.replace('1_', ''),
 		header=False, index=False, sep='\t')
 
 if __name__ == '__main__': main()
