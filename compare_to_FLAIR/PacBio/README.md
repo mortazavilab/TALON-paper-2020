@@ -2,9 +2,6 @@
 
 FLAIR was cloned from https://github.com/BrooksLabUCSC/flair on 8/5/2019.
 
-# Running FLAIR on GM12878 PacBio data
-FLAIR version: 1.4
-
 1. Run align and correct steps separately on replicates
 ```bash
 qsub R1/./run_FLAIR_align.sh
