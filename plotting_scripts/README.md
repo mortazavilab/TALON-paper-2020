@@ -16,4 +16,5 @@ This directory contains scripts used for data analysis and visualization in the 
 | [plot_novelty_categories_distinct_isoforms.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_novelty_categories_distinct_isoforms.R) | Plot the number of distinct isoforms detected in one or more provided long-read datasets. Grouped by novelty category. |
 | [plot_novelty_category_read_counts.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_novelty_category_read_counts.R) | Plot reads counts per novelty category per long-read dataset | 
 | [plot_novelty_category_read_counts_one_dataset.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_novelty_category_read_counts_one_dataset.R) | Plot reads counts per novelty category per dataset, but with aesthetics set up for one dataset |
+| [plot_percent_IP_by_read_annot_category.py](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_percent_IP_by_read_annot_category.py) | Plot the percent of reads per novelty category that show evidence of internal priming. |
 
