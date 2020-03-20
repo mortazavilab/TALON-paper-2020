@@ -39,7 +39,7 @@ plot_novelty_on_reads <- function(observed_transcripts, outdir, dset){
     # Compute percentages
     freqs_by_dataset <- observed_transcripts %>% group_by(dataset,novelty) %>% count()
     freqs_by_dataset <- freqs_by_dataset %>% group_by(dataset) %>% 
-                        mutate(percent = round(100*n/sum(n),1))
+                        mutate(percent = round(100*n/sum(n),2))
     print(freqs_by_dataset)
     observed_transcripts <- merge(observed_transcripts, freqs_by_dataset, 
                                   by = c("dataset","novelty"), all.x = T, all.y = F)
