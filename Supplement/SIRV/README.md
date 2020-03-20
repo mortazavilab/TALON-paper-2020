@@ -12,6 +12,7 @@ Rscript $PLOTPATH/plot_novelty_category_read_counts.R \
     --datasets PB_GM12878_R1,PB_GM12878_R2 \
     -o plots/
 ```
+<img align="center" width="400" src="plots/SIRV_PB_GM12878_R1-PB_GM12878_R2_reads_by_isoform_category.png">
 
 ## Panel B: Distinct transcript models, unfiltered
 ```
@@ -25,6 +26,8 @@ Rscript $PLOTPATH/plot_novelty_categories_distinct_isoforms.R \
         --ymax 350 \
         -o plots/
 ```
+>>>>>>> mod_filtering
+<img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_distinct_isoforms_by_category.png">
 
 ## Panel C: Fraction internal priming by category (unfiltered)
 ```
@@ -42,6 +45,7 @@ python $PLOTPATH/plot_percent_IP_by_read_annot_category.py \
     --omitGenomic \
     --outprefix plots/SIRV
 ```
+<img align="center" width="400" src="plots/SIRV_internalPrimed_reads_by_novelty_type.png">
 
 ## Panel D: Reads by category (filtered)
 ```
@@ -55,6 +59,7 @@ Rscript $PLOTPATH/plot_novelty_category_read_counts.R \
     --datasets PB_GM12878_R1,PB_GM12878_R2 \
     -o post-filter/
 ```
+<img align="center" width="400" src="post-filter/PB_GM12878_R1-PB_GM12878_R2_reads_by_isoform_category.png">
 
 ## Panel E: Distinct transcript models, filtered
 ```
@@ -68,3 +73,4 @@ Rscript $PLOTPATH/plot_novelty_categories_distinct_isoforms.R \
         --ymax 350 \
         -o post-filter/
 ```
+<img align="center" width="400" src="post-filter/PB_GM12878_R1-PB_GM12878_R2_distinct_isoforms_by_category.png">
