@@ -112,14 +112,15 @@ Rscript plot_ebv_v_human_abundances.R \
 ## Genome browser trackline
 ### Generate tracklines using above GTF
 ```bash
-echo "ebv_talon.gtf,n+,0,N/A,http://crick.bio.uci.edu/freese/TALON_gtf/ebv_talon_tracks" > ebv_gtf_track_config.csv
+url=http://crick.bio.uci.edu/freese/TALON_gtf/ebv_talon_tracks
+python ../data_processing/gen_novelty_tracks_gtf.py \
+          -gtf ebv_talon.gtf \
+          -novelty n+ \
+          -combine_isms 0 \
+          -url ${url}
 
-python ../analysis_scripts/gen_novelty_tracks_gtf.py \
-          --c ebv_gtf_track_config.csv
-url=`cut -d, -f5 ebv_gtf_track_config.csv`
-n=`cut -d, -f2 ebv_gtf_track_config.csv`
 cp ebv_chr1.gtf ebv_talon_tracks/
-printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gtf' "$url" >> ebv_talon_tracks/ebv_talon_${n}_tracks
+printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gtf' "$url" >> ebv_talon_tracks/ebv_talon_n+_tracks
 ```
 
 From here, you can open the genome browser up and display your tracklines, and use the genome browser's PDF functionality or take a screenshot to get the genome browser shot. 
@@ -202,7 +203,7 @@ Rscript plot_ebv_v_human_abundances.R \
 # make gtf tracks
 echo "ont_ebv_talon.gtf,n+,0,N/A,http://crick.bio.uci.edu/freese/TALON_gtf/ont_ebv_talon_tracks" > ont_ebv_gtf_track_config.csv
 
-python ../analysis_scripts/gen_novelty_tracks_gtf.py \
+python ../data_processing/gen_novelty_tracks_gtf.py \
           --c ont_ebv_gtf_track_config.csv
 url=`cut -d, -f5 ont_ebv_gtf_track_config.csv`
 n=`cut -d, -f2 ont_ebv_gtf_track_config.csv`
@@ -214,7 +215,7 @@ printf 'track name="EBV Reference" visibility=pack color=0,0,128\n%s/ebv_chr1.gt
 <img align="center" width="700" src="ont_ebv_tracks.png ">
 
 
-## Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
+<!-- ## Download the ENCODE CAGE GM12878 data in bed format, and extract only EBV TSSs, and cat them together
 ```bash
 wget https://www.encodeproject.org/files/ENCFF383NVJ/@@download/ENCFF383NVJ.bed.gz
 wget https://www.encodeproject.org/files/ENCFF016XXM/@@download/ENCFF016XXM.bed.gz
@@ -309,5 +310,5 @@ Rscript plot_support_by_novelty_type.R \
 
 <img align="center" width="700" src="ont_ebv_PAS-comp_support.png">
 
-
+ -->
 
