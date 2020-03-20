@@ -4,3 +4,4 @@ This directory contains scripts used for data analysis and visualization in the 
 | Script        | Description  |
 | ------------- |-------------|
 | [longread_v_illumina_gene_counts_edgeR.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/longread_v_illumina_gene_counts_edgeR.R)| Runs differential gene expression analysis on long-read vs short-read data. Generates an MA plot and DE output file. | 
+| [longread_v_illumina_transcript_counts_edgeR.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/longread_v_illumina_transcript_counts_edgeR.R) | Runs differential transcript expression analysis on long-read vs short-read data. Generates an MA plot and DE output file. |
