@@ -111,16 +111,14 @@ temp = os.path.dirname(gtffile)
 odir = format_odir(temp)
 odir = make_dated_folder(odir, get_basename(gtffile))
 odir = odir + get_basename(gtffile)+'_'
-url = line[4]
+url = args.url
 if url[-1] != '/':
     url += '/'
 
 # where to output final tracks to
-if not ind:
-    # custom tracks file    
-    tfile = odir+sep_type+'_tracks'
-    # print(tfile)
-    tfile = open(tfile, 'w')
+tfile = odir+sep_type+'_tracks'
+# print(tfile)
+tfile = open(tfile, 'w')
 
 # classes to look for and their associated colors
 if sep_type == 'n':
@@ -233,8 +231,6 @@ for c, fname in ofiles.items():
 #           ' Run move_tracks.py or manually move files.') 
 #     tfile.close()
 
-# close config file
-cfile.close()
 
 
 
