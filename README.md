@@ -19,6 +19,9 @@ Describes exactly how the panels of Figure 3 in the paper were generated
 [Figure_4](https://github.com/dewyman/TALON-paper-2020/tree/master/Figure_4):
 Describes exactly how the panels of Figure 4 in the paper were generated
 
+[Supplement](https://github.com/dewyman/TALON-paper-2020/tree/master/Supplement):
+Describes exactly how the figures in the supplment were generated
+
 [refs](https://github.com/dewyman/TALON-paper-2020/tree/master/refs):
 Contains instructions for downloading reference genomes, GENCODE annotations, and variant files. Also includes scripts we used to prepare input files for TranscriptClean and TALON initializations.
 
