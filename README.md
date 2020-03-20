@@ -26,4 +26,4 @@ Contains instructions for downloading reference genomes, GENCODE annotations, an
 Scripts for downloading short-read Illumina RNA-seq data from the ENCODE consortium and running Kallisto on them in order to perform short read quantification.
 
 [analysis_scripts](https://github.com/dewyman/TALON-paper-2020/tree/master/analysis_scripts):
-Older versions of visualization scripts for plotting things like gene/transcript expression correlations etc. We are in the process of deprecating this directory and moving final script versions to plotting_scripts instead.
+Scripts used for general analysis done in this repo.
