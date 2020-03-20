@@ -2,8 +2,6 @@
 
 FLAIR was cloned from https://github.com/BrooksLabUCSC/flair on 3/11/2020.
 
-# Running FLAIR on GM12878 ONT data
-
 1. Run align and correct steps separately on replicates
 ```bash
 qsub R1/./run_FLAIR_align.sh
