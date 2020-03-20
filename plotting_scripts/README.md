@@ -17,4 +17,6 @@ This directory contains scripts used for data analysis and visualization in the 
 | [plot_novelty_category_read_counts.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_novelty_category_read_counts.R) | Plot reads counts per novelty category per long-read dataset | 
 | [plot_novelty_category_read_counts_one_dataset.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_novelty_category_read_counts_one_dataset.R) | Plot reads counts per novelty category per dataset, but with aesthetics set up for one dataset |
 | [plot_percent_IP_by_read_annot_category.py](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_percent_IP_by_read_annot_category.py) | Plot the percent of reads per novelty category that show evidence of internal priming. |
-
+| [plot_read_length_by_novelty.py](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_read_length_by_novelty.py) | Plot read length distribution by novelty category. |
+| [plot_read_length_distributions.py](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_read_length_distributions.py) | Plot TALON read length distribution for one or more long-read datasets. | 
+| [plot_support_by_novelty_type.R](https://github.com/dewyman/TALON-paper-2020/blob/master/plotting_scripts/plot_support_by_novelty_type.R) | Plot CAGE, PolyA, or RNA-PET support for transcript models by novelty category. Takes file from support analysis as input.  |
