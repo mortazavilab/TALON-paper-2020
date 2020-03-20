@@ -26,7 +26,6 @@ Rscript $PLOTPATH/plot_novelty_categories_distinct_isoforms.R \
         --ymax 350 \
         -o plots/
 ```
->>>>>>> mod_filtering
 <img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_distinct_isoforms_by_category.png">
 
 ## Panel C: Fraction internal priming by category (unfiltered)
