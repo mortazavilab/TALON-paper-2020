@@ -19,7 +19,7 @@ REFPATH=/data/users/freese/mortazavi_lab/ref/mm10/
 
 2. Extract splice junctions from cortex and hippocampus PacBio gtfs using TranscriptClean
 ```bash
-python ../get_SJs_from_gtf.py \
+python ../../get_SJs_from_gtf.py \
 	--f ${cortex_pb_gtf} \
 	--g ${REFPATH}mm10.fa \
 	--o pb_talon_cortex_sjs.tab
@@ -41,11 +41,11 @@ qsub run_STAR_illumina_hippo_Rep2.sh
 
 4. Filter out novel Illumina SJs that don't have support from both reps and known Illumina SJs that have no read support.
 ```bash
-python ../filter_illumina_sjs.py \
+python ../../filter_illumina_sjs.py \
 	-sj_1 cortex_1_alignedSJ.out.tab \
 	-sj_2 cortex_2_alignedSJ.out.tab
 
-python ../filter_illumina_sjs.py \
+python ../../filter_illumina_sjs.py \
 	-sj_1 hippo_1_alignedSJ.out.tab \
 	-sj_2 hippo_2_alignedSJ.out.tab 
 ```
@@ -61,7 +61,7 @@ python ../filter_illumina_sjs.py \
 ANNPATH=~/mortazavi_lab/ref/gencode.vM21/
 REFPATH=~/mortazavi_lab/ref/mm10/
 
-python ../get_SJs_from_gtf.py \
+python ../../get_SJs_from_gtf.py \
     --f ${ANNPATH}gencode.vM21.annotation.gtf \
 	--g ${REFPATH}mm10.fa \
 	--o gencode_vM21_sjs.tab
@@ -69,11 +69,11 @@ python ../get_SJs_from_gtf.py \
 
 2. We then use the splice junctions we extracted from the PacBio mouse brain gtfs to label each splice junction with its novelty type
 ```bash
-python ../label_sj_novelty.py \
+python ../../label_sj_novelty.py \
 	-sj pb_talon_cortex_sjs.tab \
 	-ref_sj gencode_vM21_sjs.tab 
 
-python ../label_sj_novelty.py \
+python ../../label_sj_novelty.py \
 	-sj pb_talon_hippo_sjs.tab \
 	-ref_sj gencode_vM21_sjs.tab 
 ```
@@ -81,11 +81,11 @@ python ../label_sj_novelty.py \
 3. Now we can look at the proportions of known, nnc, and nic splice junctions present in our data in the form of a bar chart
 ```bash
 # TODO
-python ../plot_sj_novelty_counts.py \
+python ../../plot_sj_novelty_counts.py \
 	-sj pb_talon_cortex_sjs_novelty.tab \
 	-sample "PacBio Cortex"
 
-python ../plot_sj_novelty_counts.py \
+python ../../plot_sj_novelty_counts.py \
 	-sj pb_talon_hippo_sjs_novelty.tab \
 	-sample "PacBio Hippocampus"
 ```
@@ -95,7 +95,7 @@ python ../plot_sj_novelty_counts.py \
 
 4. Get splice junction novelty types for our Illumina splice junction files so we can look for support for novel splice junctions in our short-read data
 ```bash
-python ../label_sj_novelty.py \
+python ../../label_sj_novelty.py \
 	-sj cortex_alignedSJ.out.tab \
 	-ref_sj gencode_vM21_sjs.tab 
 
@@ -106,13 +106,13 @@ python ../label_sj_novelty.py \
 
 5. Let's see what percentage of novel splice junctions are supported by Illumina data. 
 ```bash
-python ../plot_sj_novelty_counts.py \
+python ../../plot_sj_novelty_counts.py \
 	-sj pb_talon_cortex_sjs_novelty.tab \
 	-sample "PacBio Cortex" \
 	--extra_support cortex_alignedSJ.out_novelty.tab \
 	--support_name Illumina
 
-python ../plot_sj_novelty_counts.py \
+python ../../plot_sj_novelty_counts.py \
 	-sj pb_talon_hippo_sjs_novelty.tab \
 	-sample "PacBio Hippocampus" \
 	--extra_support hippo_alignedSJ.out_novelty.tab \
@@ -125,7 +125,7 @@ python ../plot_sj_novelty_counts.py \
 7. We can also visualize how known and novel splice junctions are supported by the different technologies (illumina, pacbio)
 ```bash
 # get the novel PacBio splice junctions
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
 	-sj_1 pb_talon_cortex_sjs_novelty.tab \
 	-sj_1_name "PacBio" \
 	-sj_2 gencode_vM21_sjs.tab \
@@ -133,7 +133,7 @@ python ../compare_sjs_venn2.py \
 	-sample "PacBio Cortex"
 
 # get the novel Illumina splice junctions
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
  	-sj_1 cortex_alignedSJ.out_novelty.tab \
 	-sj_1_name "Illumina" \
 	-sj_2 gencode_vM21_sjs.tab \
@@ -141,14 +141,14 @@ python ../compare_sjs_venn2.py \
 	-sample "Illumina Cortex"
 
 # look at novel/known splice junction support by Illumina data
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
 	-sj_1 PacBio_Cortex_unsupported_sjs.tab \
 	-sj_1_name "Novel PacBio SJs" \
 	-sj_2 Illumina_Cortex_unsupported_sjs.tab \
 	-sj_2_name "Novel Illumina SJs" \
 	-sample "Novel Cortex"
 
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
 	-sj_1 PacBio_Cortex_supported_sjs.tab \
 	-sj_1_name "Known PacBio SJs" \
 	-sj_2 Illumina_Cortex_supported_sjs.tab \
@@ -157,28 +157,28 @@ python ../compare_sjs_venn2.py \
 
 
 # do the same in hippocampus
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
 	-sj_1 pb_talon_hippo_sjs_novelty.tab \
 	-sj_1_name "PacBio" \
 	-sj_2 gencode_vM21_sjs.tab \
 	-sj_2_name "Gencode" \
 	-sample "PacBio Hippocampus"
 
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
  	-sj_1 hippo_alignedSJ.out_novelty.tab \
 	-sj_1_name "Illumina" \
 	-sj_2 gencode_vM21_sjs.tab \
 	-sj_2_name "Gencode" \
 	-sample "Illumina Hippocampus"
 
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
 	-sj_1 PacBio_Hippocampus_unsupported_sjs.tab \
 	-sj_1_name "Novel PacBio SJs" \
 	-sj_2 Illumina_Hippocampus_unsupported_sjs.tab \
 	-sj_2_name "Novel Illumina SJs" \
 	-sample "Novel Hippocampus"
 
-python ../compare_sjs_venn2.py \
+python ../../compare_sjs_venn2.py \
 	-sj_1 PacBio_Hippocampus_supported_sjs.tab \
 	-sj_1_name "Known PacBio SJs" \
 	-sj_2 Illumina_Hippocampus_supported_sjs.tab \
