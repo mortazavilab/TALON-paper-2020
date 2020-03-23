@@ -85,7 +85,19 @@ Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-ISM_transcript_correlatio
 
 TODO: Dana
 
-## Figure S9: Known gene expression correlation between long read platforms and Illumina
+## Figure S9: Reproducibility of PacBio gene and transcript expression in mouse cortex and hippocampus
+
+TODO: Gaby?
+
+### Panel A: Mouse cortex gene correlation between replicates
+
+### Panel B: Mouse cortex known transcript correlation between replicates
+
+### Panel C: Mouse hippocampus gene correlation between replicates
+
+### Panel D: Mouse hippocampus known transcript correlation between replicates
+
+<!-- ## Figure S9: Known gene expression correlation between long read platforms and Illumina
 
 ### PacBio
 ```bash
@@ -116,4 +128,4 @@ Rscript ${PLOTPATH}/plot_longread_illumina_gene_correlation.R \
     --srtype Illumina \
     --lrtype ONT \
     -o lr_sr_corr
-```
+``` -->
