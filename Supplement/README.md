@@ -14,7 +14,11 @@ kallisto1=../Illumina/GM12878/Kallisto/Rep1/abundance.tsv
 kallisto2=../Illumina/GM12878/Kallisto/Rep2/abundance.tsv
 ```
 
-## Figure S3 and Figure S7a-b: TALON read length distributions for PacBio and ONT GM12878 datasets
+## Figure S2: Performance of TALON filteing on SIRC transcripts sequences with PacBio
+
+TODO: Dana
+
+## Figure S3: TALON read length distributions for PacBio GM12878
 
 Remove SIRV and ERCC reads
 ```bash
@@ -31,8 +35,15 @@ python ${PLOTPATH}/plot_read_length_distributions.py \
 ```
 See resulting plots [here](https://github.com/dewyman/TALON-paper-2020/tree/master/Supplement/read_lengths).
 
+## Figure S4: Characterization of gene detection in GM12878 by short reads and PacBio long reads.
 
-# Figure S5B: Number of exons per transcript model detected in PacBio GM12878 transcriptomes. Transcripts are grouped by novelty type assignment.
+TODO: Dana
+
+## Figure S5: Length/exon count by transcript type in GM12878 PacBio
+
+### Panel A: Read length per transcript novelty category
+
+### Panel B: Exons per transcript novelty category
 ```bash
 pb_filt_abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_talon_abundance_filtered.tsv
 Rscript ${PLOTPATH}/plot_n_exons_by_novelty.R \
@@ -41,14 +52,21 @@ Rscript ${PLOTPATH}/plot_n_exons_by_novelty.R \
 ```
 <img align="center" width="600" src="figures/transcript_exonCount_by_novelty_type.png">
 
-# Figure S7: Transcript and gene quantification by PacBio/ONT and TALON 
+## Figure S6: Epstein-Barr virus transcriptome characterization in GM12878
+
+See the [ebv directory](https://github.com/dewyman/TALON-paper-2020/tree/master/ebv) for analysis and plots generated for this figure.  
+
+## Figure S7: Characterization of GM12878 cell line by ONT direct-RNA sequencing 
+
+### Panels A-B: Read length distributions
+See resulting plots [here](https://github.com/dewyman/TALON-paper-2020/tree/master/Supplement/read_lengths).
+
+## Panel C: Expression level of known and ISM transcript models in PacBio/ONT in GM12878
+
 ```bash
 abundance=${DATA}/pb_ont_talon_abundance.tsv
 filt_abundance=${DATA}/pb_ont_talon_abundance_filtered.tsv
-```
 
-## Panel C: Expression level of known and ISM transcript models in PacBio/ONT in GM12878
-```bash
 Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
          --f ${filt_abundance} \
          --d1 PB_GM12878_R1 \
@@ -59,10 +77,16 @@ Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
          --ISM \
          -o figures/
 ```
+
 <img align="center" width="400" src="figures/PB_GM12878_R1-ONT_GM12878_R1_Known-ISM_transcript_correlationPlot.png">
 Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-ISM_transcript_correlations.txt. 
 
-## Figure S9:Known gene expression correlation between long read platforms and Illumina
+## Figure S8: TALON and FLAIR gene dectection across sequencing platforms and samples
+
+TODO: Dana
+
+## Figure S9: Known gene expression correlation between long read platforms and Illumina
+
 ### PacBio
 ```bash
 mkdir -p lr_sr_corr
