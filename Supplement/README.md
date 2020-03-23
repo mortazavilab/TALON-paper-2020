@@ -14,9 +14,9 @@ kallisto1=../Illumina/GM12878/Kallisto/Rep1/abundance.tsv
 kallisto2=../Illumina/GM12878/Kallisto/Rep2/abundance.tsv
 ```
 
-## Figure S2: Performance of TALON filteing on SIRC transcripts sequences with PacBio
+## Figure S2: Performance of TALON filteing on SIRV transcripts sequences with PacBio
 
-TODO: Dana
+See the following directory: https://github.com/dewyman/TALON-paper-2020/tree/master/Supplement/SIRV  
 
 ## Figure S3: TALON read length distributions for PacBio GM12878
 
@@ -37,7 +37,7 @@ See resulting plots [here](https://github.com/dewyman/TALON-paper-2020/tree/mast
 
 ## Figure S4: Characterization of gene detection in GM12878 by short reads and PacBio long reads.
 
-TODO: Dana
+See the following directory: https://github.com/dewyman/TALON-paper-2020/tree/master/Figure_2/DE
 
 ## Figure S5: Length/exon count by transcript type in GM12878 PacBio
 
@@ -83,7 +83,7 @@ Correlations are in PB_GM12878_R1-ONT_GM12878_R1_Known-ISM_transcript_correlatio
 
 ## Figure S8: TALON and FLAIR gene dectection across sequencing platforms and samples
 
-TODO: Dana
+See the following: https://github.com/dewyman/TALON-paper-2020/tree/master/compare_to_FLAIR  
 
 ## Figure S9: Reproducibility of PacBio gene and transcript expression in mouse cortex and hippocampus
 
