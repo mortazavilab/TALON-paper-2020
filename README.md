@@ -31,5 +31,5 @@ Contains instructions for downloading reference genomes, GENCODE annotations, an
 [Illumina](https://github.com/dewyman/TALON-paper-2020/tree/master/Illumina):
 Scripts for downloading short-read Illumina RNA-seq data from the ENCODE consortium and running Kallisto on them in order to perform short read quantification.
 
-[analysis_scripts](https://github.com/dewyman/TALON-paper-2020/tree/master/analysis_scripts):
-Scripts used for general analysis done in this repo.
+[data_processing](https://github.com/dewyman/TALON-paper-2020/tree/master/data_processing):
+Scripts used to run TALON and post-TALON utilities (ie filtering, generating GTFs, generating abundance matrices), as well as other various analysis scripts. 
