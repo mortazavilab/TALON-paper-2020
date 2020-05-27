@@ -14,9 +14,7 @@ cat ont_annots.tsv | cut -f2,10,11,16,17 > ont_mini_annots.tsv
 2. Subsample reads at various depths
 ```bash 
 pb_reads=pb_mini_annots.tsv
-pb_whitelist=/data/users/freese/TALON_data/revisions_1-20/human_TALON/pb_whitelist.csv
 ont_reads=ont_mini_annots.tsv
-ont_whitelist=/data/users/freese/TALON_data/revisions_1-20/human_TALON/ont_whitelist.csv
 
 python subsample_and_plot.py \
 	--f $pb_reads \
