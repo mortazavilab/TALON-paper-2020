@@ -36,6 +36,7 @@ def plot_histogram(data, xvar, label, xmax, ymax, fname):
 
     ax.text(med + 50, ymax*7/8, "Median: " + str(med) + " bp", **style)
 
+    plt.title("Distance of read start from nearest CAGE peak (known transcripts only)")
     plt.tight_layout()
     plt.savefig(fname, dpi = 600, bbox_inches='tight')
     plt.close()
