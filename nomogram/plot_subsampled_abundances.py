@@ -218,9 +218,6 @@ def main():
 		ufilt_files.append(file)
 	ufilt_files.sort(key=get_read_num)
 
-	print(filt_files)
-	print(ufilt_files)
-
 	# parse out the read numbers from each thing
 	read_nums = [int(i.split('_')[2]) for i in filt_files[:-1]]
 	read_nums.append('full')

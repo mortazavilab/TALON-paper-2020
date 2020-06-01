@@ -58,6 +58,7 @@ talon_initialize_database \
     --o ont_talon/ont_talon
 
 plat="Sequel2"
+cd /data/users/freese/mortazavi_lab/bin/TALON-paper-2020/nomogram/pb_talon/
 touch pb_talon/pb_config.csv
 for file in pb_talon/pb*sam
 do
@@ -65,12 +66,13 @@ do
     sample="${base::${#base}-2}"
     printf "${base},${base},${plat},${file}\n" >> pb_talon/pb_config.csv
 done
-touch ont_talon/ont_config.csv
-for file in ont_talon/ont*sam
+cd /data/users/freese/mortazavi_lab/bin/TALON-paper-2020/nomogram/ont_talon/
+touch ont_config.csv
+for file in ont*sam
 do
     base=`basename $file ont.sam`
     sample="${base::${#base}-2}"
-    printf "${base},${base},${plat},${file}\n" >> ont_talon/ont_config.csv
+    printf "${base},${base},${plat},${file}\n" >> ont_config.csv
 done
 
 cd /data/users/freese/mortazavi_lab/bin/TALON-paper-2020/nomogram/pb_talon/
@@ -177,28 +179,52 @@ echo $bop > ont_talon/ont_talon_max_reads
 
 6. make the plots
 ```bash
-python why.py \
+python plot_subsampled_abundances.py \
 	-dir pb_talon/ \
 	--prefix pb_talon/pb_known \
 	--filter known \
 	--max_reads pb_talon/pb_talon_max_reads
-python why.py \
+python plot_subsampled_abundances.py \
 	-dir pb_talon/ \
 	--prefix pb_talon/pb \
 	--filter talon \
 	--max_reads pb_talon/pb_talon_max_reads
 
-python why.py \
+python plot_subsampled_abundances.py \
 	-dir ont_talon/ \
 	--prefix ont_talon/ont_known \
 	--filter known \
 	--max_reads ont_talon/ont_talon_max_reads
-python why.py \
+python plot_subsampled_abundances.py \
 	-dir ont_talon/ \
 	--prefix ont_talon/ont \
 	--filter talon \
 	--max_reads ont_talon/ont_talon_max_reads
 ```
+
+PacBio Gene Expression (Known filter)
+<img align="center" width="400" src="pb_talon/pb_known_gene_nomogram.png">
+
+PacBio Transcript Expression (Known filter)
+<img align="center" width="400" src="pb_talon/pb_known_transcript_nomogram.png">
+
+PacBio Gene Expression (TALON filter; only known, NIC, NNC models)
+<img align="center" width="400" src="pb_talon/pb_gene_nomogram.png">
+
+PacBio Transcript Expression (TALON filter; only known, NIC, NNC models)
+<img align="center" width="400" src="pb_talon/pb_transcript_nomogram.png">
+
+ONT Gene Expression (Known filter)
+<img align="center" width="400" src="ont_talon/ont_known_gene_nomogram.png">
+
+ONT Transcript Expression (Known filter)
+<img align="center" width="400" src="ont_talon/ont_known_transcript_nomogram.png">
+
+ONT Gene Expression (TALON filter; only known, NIC, NNC models)
+<img align="center" width="400" src="ont_talon/ont_gene_nomogram.png">
+
+ONT Transcript Expression (TALON filter; only known, NIC, NNC models)
+<img align="center" width="400" src="ont_talon/ont_transcript_nomogram.png">
 
 <!-- ```bash
 talon_db=
