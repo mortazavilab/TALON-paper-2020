@@ -1,7 +1,7 @@
 # TALON paper repository
 This repository contains custom scripts and documentation associated with the analyses in our BioRxiv manuscript concerning the application of our TALON pipeline to long read transcriptomes from PacBio and direct-RNA Oxford Nanopore. 
 
-You can find the preprint here: TODO
+You can find the preprint [here](https://www.biorxiv.org/content/10.1101/672931v2).
 
 To download the TALON program, please visit https://github.com/mortazavilab/TALON.  
 To download the TranscriptClean program, please visit https://github.com/mortazavilab/TranscriptClean.
