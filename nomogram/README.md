@@ -203,28 +203,36 @@ python plot_subsampled_abundances.py \
 ```
 
 PacBio Gene Expression (Known filter)
-<img align="center" width="400" src="pb_talon/pb_known_gene_nomogram.png">
+
+<img align="center" width="400" src="pb_known_gene_nomogram.png">
 
 PacBio Transcript Expression (Known filter)
-<img align="center" width="400" src="pb_talon/pb_known_transcript_nomogram.png">
+
+<img align="center" width="400" src="pb_known_transcript_nomogram.png">
 
 PacBio Gene Expression (TALON filter; only known, NIC, NNC models)
-<img align="center" width="400" src="pb_talon/pb_gene_nomogram.png">
+
+<img align="center" width="400" src="pb_gene_nomogram.png">
 
 PacBio Transcript Expression (TALON filter; only known, NIC, NNC models)
-<img align="center" width="400" src="pb_talon/pb_transcript_nomogram.png">
+
+<img align="center" width="400" src="pb_transcript_nomogram.png">
 
 ONT Gene Expression (Known filter)
-<img align="center" width="400" src="ont_talon/ont_known_gene_nomogram.png">
+
+<img align="center" width="400" src="ont_known_gene_nomogram.png">
 
 ONT Transcript Expression (Known filter)
-<img align="center" width="400" src="ont_talon/ont_known_transcript_nomogram.png">
+
+<img align="center" width="400" src="ont_known_transcript_nomogram.png">
 
 ONT Gene Expression (TALON filter; only known, NIC, NNC models)
-<img align="center" width="400" src="ont_talon/ont_gene_nomogram.png">
+
+<img align="center" width="400" src="ont_gene_nomogram.png">
 
 ONT Transcript Expression (TALON filter; only known, NIC, NNC models)
-<img align="center" width="400" src="ont_talon/ont_transcript_nomogram.png">
+
+<img align="center" width="400" src="ont_transcript_nomogram.png">
 
 <!-- ```bash
 talon_db=

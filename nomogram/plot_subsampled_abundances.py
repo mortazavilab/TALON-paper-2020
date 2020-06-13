@@ -126,9 +126,20 @@ def gene(ab, ufilt_files, read_nums, f_type, max_reads, prefix):
 		plot_data = pd.concat([plot_data,sub_df[['reads','bin','perc_within_10']]])
 
 	# convert to human-readable TPM values
-	plot_data['TPM bin'] = plot_data.apply(lambda x: (bins[x.bin-1],bins[x.bin]), axis=1)
+	plot_data = plot_data.merge(bin_df, on='bin')
+	plot_data['TPM bin'] = plot_data.apply(lambda x:
+		'{}-{} TPM n={}'.format(bins[x.bin-1],bins[x.bin],x.bin_total) if bins[x.bin-1] != 500 else '{}+ TPM n={}'.format(bins[x.bin-1], x.bin_total),
+		axis=1)
 	ax = sns.lineplot(x='reads', y='perc_within_10', hue='TPM bin', marker='o', data=plot_data)
-	# ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+	# make stylisitic changes
+	ax.set_ylabel('Percentage of genes within 10% of final value')
+	ax.set_xlabel('Mapped reads (millions)')
+	plt.draw()
+	xticks = ['{:.2f}'.format(float(interval.get_text())/1000000) for interval in ax.get_xticklabels()]
+	ax.set_xticklabels(xticks)
+	handles, labels = ax.get_legend_handles_labels()
+	ax.legend(handles=handles[1:], labels=labels[1:])
 	plt.savefig('{}_gene_nomogram.png'.format(prefix))
 	plt.clf()	
 
@@ -186,9 +197,21 @@ def transcript(ab, filt_files, read_nums, f_type, max_reads, prefix):
 		plot_data = pd.concat([plot_data,sub_df[['reads','bin','perc_within_10']]])
 
 	# convert to human-readable TPM values
-	plot_data['TPM bin'] = plot_data.apply(lambda x: (bins[x.bin-1],bins[x.bin]), axis=1)
+	plot_data = plot_data.merge(bin_df, on='bin')
+	plot_data['TPM bin'] = plot_data.apply(lambda x:
+		'{}-{} TPM n={}'.format(bins[x.bin-1],bins[x.bin],x.bin_total) if bins[x.bin-1] != 500 else '{}+ TPM n={}'.format(bins[x.bin-1], x.bin_total),
+		axis=1)
+
 	ax = sns.lineplot(x='reads', y='perc_within_10', hue='TPM bin', marker='o', data=plot_data)
-	# ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
+
+	# make stylisitic changes
+	ax.set_ylabel('Percentage of transcripts within 10% of final value')
+	ax.set_xlabel('Mapped reads (millions)')
+	plt.draw()
+	xticks = ['{:.2f}'.format(float(interval.get_text())/1000000) for interval in ax.get_xticklabels()]
+	ax.set_xticklabels(xticks)
+	handles, labels = ax.get_legend_handles_labels()
+	ax.legend(handles=handles[1:], labels=labels[1:])
 	plt.savefig('{}_transcript_nomogram.png'.format(prefix))
 	plt.clf()
 
@@ -235,8 +258,8 @@ def main():
 	t_df = compute_t_tpm(t_df, full=True)
 
 	# plot de plot
-	gene(g_df, ufilt_files, read_nums, f_type, max_reads, prefix)
 	transcript(t_df, filt_files, read_nums, f_type, max_reads, prefix)
+	gene(g_df, ufilt_files, read_nums, f_type, max_reads, prefix)
 
 
 if __name__ == '__main__':
