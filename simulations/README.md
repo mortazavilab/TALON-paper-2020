@@ -592,3 +592,39 @@ talon_abundance \
 	--whitelist talon/whitelist.csv
 ```
 
+Isolate the fasta headers for quantification accuracy
+```bash
+r1=rep1/rep1.fasta
+r2=rep2/rep2.fasta
+r1_perf=rep1_perf/rep1_perf.fasta
+r2_perf=rep2_perf/rep2_perf.fasta
+
+grep \> $r1 > rep1/rep1_headers.fasta
+grep \> $r2 > rep2/rep2_headers.fasta
+grep \> $r1_perf > rep1_perf/rep1_perf_headers.fasta
+grep \> $r2_perf > rep2_perf/rep2_perf_headers.fasta
+```
+
+Get quantification correlations
+```bash
+python compare_quantification.py 
+```
+
+```
+rep1
+Gene correlation: 0.9752182655068521, gene pval: 0.0
+Transcript correlation: 0.839616947752433, transcript pval: 0.0
+
+rep2
+Gene correlation: 0.9793314342913847, gene pval: 0.0
+Transcript correlation: 0.7571022861073621, transcript pval: 0.0
+
+rep1_perf
+Gene correlation: 0.9942027438596236, gene pval: 0.0
+Transcript correlation: 0.9475228329665103, transcript pval: 0.0
+
+rep2_perf
+Gene correlation: 0.9929908876334156, gene pval: 0.0
+Transcript correlation: 0.9367575707601811, transcript pval: 0.0
+```
+
