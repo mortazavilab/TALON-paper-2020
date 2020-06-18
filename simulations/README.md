@@ -1,4 +1,4 @@
-# simyoolations
+# Simulations
 
 We downloaded release 2.6 from https://github.com/bcgsc/NanoSim.git.
 
