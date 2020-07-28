@@ -13,6 +13,9 @@ python plot_end_dists.py \
 	-o 'pb'
 ```
 
+<img align="center" width="400" src="pb_tss_dists.png">
+<img align="center" width="400" src="pb_tes_dists.png">
+
 For the ONT data: 
 ```bash
 read_annot=/data/users/freese/talon_data/revisions_1-20/human_TALON/GM12878_talon_read_annot.tsv
@@ -23,3 +26,6 @@ python plot_end_dists.py \
 	--datasets 'ONT_GM12878_R1,ONT_GM12878_R2' \
 	-o 'ont'
 ```
+
+<img align="center" width="400" src="ont_tss_dists.png">
+<img align="center" width="400" src="ont_tes_dists.png">
