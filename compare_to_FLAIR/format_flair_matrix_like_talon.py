@@ -34,12 +34,12 @@ with open(infile, 'r') as f:
             entry["counts"] = line[1:]
 
             # Determine novelty
-            if "ENSG" in gene_ID and '-' not in gene_ID:
+            if "ENSG" in gene_ID and ':' not in gene_ID:
                 entry["gene_novelty"] = "Known"
             else:
                 entry["gene_novelty"] = "Novel"
 
-            if "ENST" in transcript_ID and '-' not in transcript_ID:
+            if "ENST" in transcript_ID and 'aligned' not in transcript_ID:
                 entry["transcript_novelty"] = "Known"
             else:
                 entry["transcript_novelty"] = "Novel"
