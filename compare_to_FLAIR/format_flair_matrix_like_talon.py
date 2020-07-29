@@ -39,7 +39,8 @@ with open(infile, 'r') as f:
             else:
                 entry["gene_novelty"] = "Novel"
 
-            if "ENST" in transcript_ID and 'aligned' not in transcript_ID:
+            # to account for weird FLAIR and NanoSim behavior
+            if "ENST" in transcript_ID and 'aligned' not in transcript_ID and '-' not in transcript_ID:
                 entry["transcript_novelty"] = "Known"
             else:
                 entry["transcript_novelty"] = "Novel"
