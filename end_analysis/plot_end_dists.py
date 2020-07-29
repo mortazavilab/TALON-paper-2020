@@ -101,6 +101,9 @@ def main():
 	df = df.loc[~df.chrom.str.contains('ERCC')]
 	df = df.loc[df.chrom != 'chrM']
 
+	# only look at multiexonic things, which are transcripts
+	# we are more confident about
+	df = df.loc[df.n_exons > 1]
 
 	# pair it down only to the columns we need
 	df = df[['read_name', 'read_start', 'read_end', 'annot_transcript_id', 'strand']]
