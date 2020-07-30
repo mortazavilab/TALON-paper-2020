@@ -151,6 +151,36 @@ StringTie2 found 60 known SIRV isoforms
 StringTie2 found 2 novel SIRV isoforms
 ```
 
+What if we try removing the coverage filter?
+
+```bash
+prefix='r1_merged'
+python get_stringtie_sirvs_onefile.py \
+	-gtf ${prefix}_stringtie.gtf \
+	-ref_id_field transcript_id \
+	--no_coverage_filter
+
+prefix='r2_merged'
+python get_stringtie_sirvs_onefile.py \
+	-gtf ${prefix}_stringtie.gtf \
+	-ref_id_field transcript_id \
+	--no_coverage_filter
+```
+
+We are able to recover a more reasonable number of SIRVs for each replicate
+
+```
+# rep 1
+StringTie2 found 69 known SIRV isoforms
+StringTie2 found 5 novel SIRV isoforms
+
+# rep 2
+StringTie2 found 69 known SIRV isoforms
+StringTie2 found 5 novel SIRV isoforms
+```
+
+
+
 Finally, I'll merge the gtfs on transcript id alone to see how many unique known and novel isoforms were found in the combined replicates
 
 ```bash
