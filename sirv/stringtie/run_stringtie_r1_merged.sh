@@ -22,5 +22,5 @@ ${sdir}./stringtie \
 	-e \
 	-G ${ref_annot} \
 	-o ${prefix}_stringtie.gtf \
-	-A ${prefix}_abundance.tsv
+	-A ${prefix}_abundance.tsv \
 	$r1

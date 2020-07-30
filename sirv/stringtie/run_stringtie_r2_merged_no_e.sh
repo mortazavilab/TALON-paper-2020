@@ -14,12 +14,11 @@ r2=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Seq
 ref_annot=merged_stringtie.gtf
 
 # rep 2
-prefix='r2_merged'
+prefix='r2_merged_no_e'
 ${sdir}./stringtie \
 	-L \
 	-p 16 \
 	-c 1 \
-	-e \
 	-G ${ref_annot} \
 	-o ${prefix}_stringtie.gtf \
 	-A ${prefix}_abundance.tsv \

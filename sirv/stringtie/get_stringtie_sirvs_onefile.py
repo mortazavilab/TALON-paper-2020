@@ -33,7 +33,7 @@ def process_st_gtf(f, ref_id_field):
 	df.drop('coverage', axis=1, inplace=True)
 
 	if len1 - len2 != 0:
-		print('Removed {} 0-coverage transcripts'.format(math.abs(len1-len2)))
+		print('Removed {} 0-coverage transcripts'.format(abs(len1-len2)))
 	else:
 		print('All transcripts present have above 0 coverage')
 

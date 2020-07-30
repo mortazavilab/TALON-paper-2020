@@ -92,7 +92,7 @@ StringTie2 found 5 novel SIRV isoforms
 
 Good job, StringTie!
 
-3. Finally, rerun each of the replicates using the merged GTF as the reference annotation. This will ensure concordance of novel transcript ids across the datasets as well as allow for us to quantify on each replicate. In this case, we will use the `-e` option, as StringTie has already found all the novel transcripts we needed to find, and therefore we only want to include models that have already been annotated by StringTie.
+3. Rerun each of the replicates using the merged GTF as the reference annotation. This will ensure concordance of novel transcript ids across the datasets as well as allow for us to quantify on each replicate. In this case, we will use the `-e` option, as StringTie has already found all the novel transcripts we needed to find, and therefore we only want to include models that have already been annotated by StringTie.
 ```bash
 sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/
 r1=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R1/label_reads/PacBio_Rep1_labeled.bam
@@ -108,7 +108,7 @@ ${sdir}./stringtie \
 	-e \
 	-G ${ref_annot} \
 	-o ${prefix}_stringtie.gtf \
-	-A ${prefix}_abundance.tsv
+	-A ${prefix}_abundance.tsv \
 	$r1
 
 # rep 2
@@ -120,6 +120,122 @@ ${sdir}./stringtie \
 	-e \
 	-G ${ref_annot} \
 	-o ${prefix}_stringtie.gtf \
-	-A ${prefix}_abundance.tsv
+	-A ${prefix}_abundance.tsv \
 	$r2
+```
+
+Finally, we'll examine the output GTFs for novelty. Which again, inexplicably, now use the "transcript_id" field to list the id from the reference.
+
+```bash
+prefix='r1_merged'
+python get_stringtie_sirvs_onefile.py \
+	-gtf ${prefix}_stringtie.gtf \
+	-ref_id_field transcript_id
+
+prefix='r2_merged'
+python get_stringtie_sirvs_onefile.py \
+	-gtf ${prefix}_stringtie.gtf \
+	-ref_id_field transcript_id
+```
+
+And what do we have here... a bunch of transcripts that have 0 coverage, what even? 
+```
+# rep 1
+Removed 15 0-coverage transcripts
+StringTie2 found 56 known SIRV isoforms
+StringTie2 found 3 novel SIRV isoforms
+
+# rep 2
+Removed 12 0-coverage transcripts
+StringTie2 found 60 known SIRV isoforms
+StringTie2 found 2 novel SIRV isoforms
+```
+
+Finally, I'll merge the gtfs on transcript id alone to see how many unique known and novel isoforms were found in the combined replicates
+
+```bash
+python get_stringtie_sirvs.py \
+	-gtfs 'r1_merged_stringtie.gtf,r2_merged_stringtie.gtf' \
+	-ref_id_field transcript_id
+```
+
+```
+Removed 15 0-coverage transcripts
+Removed 12 0-coverage transcripts
+
+StringTie2 found 60 known SIRV isoforms
+StringTie2 found 3 novel SIRV isoforms
+```
+
+Interestingly it did worse when being assembled with the merged GTF?
+
+
+4. Just kidding, maybe this is the last step. Now, I'll try removing the `-e` option to see if maybe this is causing the 0-coverage isoforms to make it through the pipeline. 
+
+```bash
+sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/
+r1=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R1/label_reads/PacBio_Rep1_labeled.bam
+r2=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R2/label_reads/PacBio_Rep2_labeled.bam
+ref_annot=merged_stringtie.gtf
+
+# rep 1
+prefix='r1_merged_no_e'
+${sdir}./stringtie \
+	-L \
+	-p 16 \
+	-c 1 \
+	-G ${ref_annot} \
+	-o ${prefix}_stringtie.gtf \
+	-A ${prefix}_abundance.tsv \
+	$r1
+
+# rep 2
+prefix='r2_merged_no_e'
+${sdir}./stringtie \
+	-L \
+	-p 16 \
+	-c 1 \
+	-G ${ref_annot} \
+	-o ${prefix}_stringtie.gtf \
+	-A ${prefix}_abundance.tsv \
+	$r2
+```
+
+Again, examine each replicate for number of known/novel isoforms detected. This time with "reference_id"
+
+```bash
+prefix='r1_merged_no_e'
+python get_stringtie_sirvs_onefile.py \
+	-gtf ${prefix}_stringtie.gtf \
+	-ref_id_field reference_id
+
+prefix='r2_merged_no_e'
+python get_stringtie_sirvs_onefile.py \
+	-gtf ${prefix}_stringtie.gtf \
+	-ref_id_field reference_id
+```
+
+Nope, no 0-coverage transcripts.
+
+```
+# rep 1
+StringTie2 found 49 known SIRV isoforms
+StringTie2 found 13 novel SIRV isoforms
+
+# rep 2
+StringTie2 found 53 known SIRV isoforms
+StringTie2 found 11 novel SIRV isoforms
+```
+
+Finally, get the detected merged isoforms. 
+
+```bash
+python get_stringtie_sirvs.py \
+	-gtfs 'r1_merged_no_e_stringtie.gtf,r2_merged_no_e_stringtie.gtf' \
+	-ref_id_field reference_id
+```
+
+```
+StringTie2 found 54 known SIRV isoforms
+StringTie2 found 103 novel SIRV isoforms
 ```
