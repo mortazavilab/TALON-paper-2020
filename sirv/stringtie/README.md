@@ -124,6 +124,17 @@ ${sdir}./stringtie \
 	$r2
 ```
 
+Interestingly we found that the number of lines in the reference `merged_stringtie.gtf` is the same as the number of lines in each of the output GTFs (`r1_merged.gtf`, `r2_merged.gtf`)
+
+```bash
+wc -l merged_stringtie.gtf
+>1581620 merged_stringtie.gtf
+wc -l r2_merged_stringtie.gtf
+>1581620 r2_merged_stringtie.gtf
+wc -l r1_merged_stringtie.gtf
+>1581620 r1_merged_stringtie.gtf
+```
+
 Finally, we'll examine the output GTFs for novelty. Which again, inexplicably, now use the "transcript_id" field to list the id from the reference.
 
 ```bash
@@ -268,4 +279,70 @@ python get_stringtie_sirvs.py \
 ```
 StringTie2 found 54 known SIRV isoforms
 StringTie2 found 103 novel SIRV isoforms
+```
+
+5. Let's move on to request output expression files using the `-B` option
+
+```bash
+sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/
+r1=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R1/label_reads/PacBio_Rep1_labeled.bam
+r2=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R2/label_reads/PacBio_Rep2_labeled.bam
+ref_annot=merged_stringtie.gtf
+
+# rep 1
+prefix='r1_merged_no_e_B'
+${sdir}./stringtie \
+	-L \
+	-p 16 \
+	-c 1 \
+	-b ${prefix}_ballgown \
+	-G ${ref_annot} \
+	-o ${prefix}_stringtie.gtf \
+	-A ${prefix}_abundance.tsv \
+	$r1
+
+# rep 2
+prefix='r2_merged_no_e_B'
+${sdir}./stringtie \
+	-L \
+	-p 16 \
+	-c 1 \
+	-b ${prefix}_ballgown \
+	-G ${ref_annot} \
+	-o ${prefix}_stringtie.gtf \
+	-A ${prefix}_abundance.tsv \
+	$r2
+```
+
+6. Okay now request the expression output files with the `-e` option
+
+```bash
+sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/
+r1=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R1/label_reads/PacBio_Rep1_labeled.bam
+r2=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/data/PacBio_Sequel2_GM12878_R2/label_reads/PacBio_Rep2_labeled.bam
+ref_annot=merged_stringtie.gtf
+
+# rep 1
+prefix='r1_merged_e_B'
+${sdir}./stringtie \
+	-L \
+	-p 16 \
+	-e \
+	-b ${prefix}_ballgown \
+	-G ${ref_annot} \
+	-o ${prefix}_stringtie.gtf \
+	-A ${prefix}_abundance.tsv \
+	$r1
+
+# rep 2
+prefix='r2_merged_e_B'
+${sdir}./stringtie \
+	-L \
+	-p 16 \
+	-e \
+	-b ${prefix}_ballgown \
+	-G ${ref_annot} \
+	-o ${prefix}_stringtie.gtf \
+	-A ${prefix}_abundance.tsv \
+	$r2
 ```
