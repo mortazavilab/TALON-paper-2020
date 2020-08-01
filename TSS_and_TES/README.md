@@ -54,3 +54,27 @@ python plot_closest_CAGE.py \
     --f GM12878_PacBio_bedtools_closest.tsv \
     --xmax 800 --ymax 3500000 --o GM12878_PacBio    
 ```
+
+4. Also generate plots for ONT 
+```bash
+python plot_TSS_and_TES_annot_dists.py \
+    --f /share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/GM12878_talon_read_annot.tsv \
+    --ref gencode.v29.SIRV.ERCC.TSS_and_TES.tsv \
+    --datasets ONT_GM12878_R1,ONT_GM12878_R2 \
+    --xmax 800 \
+    --ymax 750000 \
+    --o GM12878_ONT
+```
+
+<img align="center" width="400" src="GM12878_ONT_tss_dists_hires.png">
+<img align="center" width="400" src="GM12878_ONT_TSS_dist_known.png">
+<img align="center" width="400" src="GM12878_ONT_tes_dists_hires.png">
+<img align="center" width="400" src="GM12878_ONT_TES_dist_known.png">
+
+We also get results about the number of known isoforms that have a read with a start that falls within 50 bp of the annotated TSS/TES
+
+```
+Found 13680 models with at least one read within 50 bp of the annotated TSS, which is 58.19% of known models
+Found 13742 models with at least one read within 50 bp of the annotated TES, which is 58.45% of known models
+Found 8299 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 35.30% of known models
+```

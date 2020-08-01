@@ -85,7 +85,7 @@ def plot_hires_bins(df, end_type, oprefix):
 
     hires_total = len(df.loc[(df[diff_col] > -500)&(df[diff_col] <= 500)].index)
     hires_bins = [i for i in range(-500,0,50)]
-    hires_bins += [-1, 0, 1]
+    hires_bins += [-1, 1]
     hires_bins += [i for i in range(50,550,50)]
     hires_bins = [df[diff_col].min()] + hires_bins
     hires_bins += [df[diff_col].max()]
@@ -94,27 +94,47 @@ def plot_hires_bins(df, end_type, oprefix):
     labels[0] = '(min, -500]'
     labels[-1] = '(500, max]'
 
+    bin_scores = [-1*min(abs(i),abs(j)) for i, j in zip(hires_bins[:-1],hires_bins[1:])] 
+    bin_score_tuples = [(b,s) if b != '(-1, 1]' else (b,0) for b,s in zip(labels, bin_scores)]
+    bin_score_dict = {i[0]:i[1] for i in bin_score_tuples}
+
+    # {b: s if b != [-1, 1] else b: 0 for b,s in zip(labels, bin_scores)}
+
     df[hires_bin_col] = pd.cut(df[diff_col], bins=hires_bins, labels=labels)
+    df['bin_score'] = df[hires_bin_col].map(bin_score_dict)
 
 
     hires_df = df[['annot_transcript_id',
+                         'bin_score',
                          hires_bin_col,
                          diff_col]].groupby([hires_bin_col,
+                         'bin_score',
                          'annot_transcript_id'],
                          as_index=False).count()
     hires_df.dropna(inplace=True)
     hires_df.rename({diff_col: 'counts'}, axis=1, inplace=True)
 
-    bop = hires_df[[hires_bin_col, 'counts']].groupby(hires_bin_col,
+    # sort by bin score to prioritize keeping the highest-scoring 
+    # bin when dropping duplicates on transcript id
+    hires_df.sort_values(by='bin_score', ascending=False, inplace=True)
+
+    # drop duplicate transcript ids and keep the first instance
+    bop = hires_df.drop_duplicates(subset='annot_transcript_id',
+        keep='first')
+
+    beep = bop[[hires_bin_col, 'counts']].groupby(hires_bin_col,
         as_index=False).count()
+    total = beep.counts.sum()
+    beep['total_transcripts'] = total
+    beep['perc_models'] = (beep.counts/beep.total_transcripts)*100
 
 
-    ax = sns.barplot(x=hires_bin_col, y='counts',
-            data=bop, color='#009E73', saturation=1)
+    ax = sns.barplot(x=hires_bin_col, y='perc_models',
+            data=beep, color='#009E73', saturation=1)
     ax.set(xlabel='Distance from annotated {} (bp)'.format(end_type.upper()))
-    ax.set(ylabel='Number of transcript models with a read with {} in bin range'.format(end_type.upper()))
+    ax.set(ylabel='Percentage of known transcript models with a read with {} in bin range'.format(end_type.upper()))
     ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
-    # ax.set(ylim=(0,100))
+    ax.set(ylim=(0,50))
     fname = '{}_{}_dists_hires.png'.format(oprefix, end_type)
     print('Saving plot {}'.format(fname))
     plt.savefig(fname,
@@ -160,43 +180,43 @@ def main():
     infile = options.infile
     ref_sites = options.ref_sites
 
-data = pd.read_csv(infile, sep = '\t', header = 0)
-ref_sites = pd.read_csv(ref_sites, sep = '\t', header = 0)
+    data = pd.read_csv(infile, sep = '\t', header = 0)
+    ref_sites = pd.read_csv(ref_sites, sep = '\t', header = 0)
 
-# Limit to known transcripts
-data = data.loc[data.transcript_novelty == "Known"]
+    # Limit to known transcripts
+    data = data.loc[data.transcript_novelty == "Known"]
 
-# Remove chrM reads
-data = data.loc[data.chrom != "chrM"]
+    # Remove chrM reads
+    data = data.loc[data.chrom != "chrM"]
 
-# Filter datasets (optional)
-if options.datasets != None:
-    datasets = options.datasets.split(",")
-    data = data[data['dataset'].isin(datasets)]
+    # Filter datasets (optional)
+    if options.datasets != None:
+        datasets = options.datasets.split(",")
+        data = data[data['dataset'].isin(datasets)]
 
-# Remove spikes unless requested to keep
-if options.spikes == False:
-     data = data[~data.chrom.str.contains("SIRV")]
-     data = data[~data.chrom.str.contains("ERCC")]     
+    # Remove spikes unless requested to keep
+    if options.spikes == False:
+         data = data[~data.chrom.str.contains("SIRV")]
+         data = data[~data.chrom.str.contains("ERCC")]     
 
-# Merge together reads with GENCODE start data
-data = data[["annot_transcript_id", "strand", "read_start", "read_end"]]
-data = pd.merge(data, ref_sites, on = "annot_transcript_id", 
-                how = "left")
+    # Merge together reads with GENCODE start data
+    data = data[["annot_transcript_id", "strand", "read_start", "read_end"]]
+    data = pd.merge(data, ref_sites, on = "annot_transcript_id", 
+                    how = "left")
 
-# Compute TSS/TES distances
-# Negative distance is upstream, positive is downstream
-data['TSS_dist'] = data.read_start - data.TSS_pos
-data['TES_dist'] = data.read_end - data.TES_pos
-data.loc[data['strand']=='-', ['TSS_dist', 'TES_dist']] *= -1
+    # Compute TSS/TES distances
+    # Negative distance is upstream, positive is downstream
+    data['TSS_dist'] = data.read_start - data.TSS_pos
+    data['TES_dist'] = data.read_end - data.TES_pos
+    data.loc[data['strand']=='-', ['TSS_dist', 'TES_dist']] *= -1
 
     # Plot
-    # plot_histogram(data, "TSS_dist", "Distance from annotated TSS (bp)", 
-    #                options.xmax, options.ymax, 
-    #                options.outprefix + "_TSS_dist_known.png")
-    # plot_histogram(data, "TES_dist", "Distance from annotated TES (bp)",
-    #                options.xmax, options.ymax,
-    #                options.outprefix + "_TES_dist_known.png")
+    plot_histogram(data, "TSS_dist", "Distance from annotated TSS (bp)", 
+                   options.xmax, options.ymax, 
+                   options.outprefix + "_TSS_dist_known.png")
+    plot_histogram(data, "TES_dist", "Distance from annotated TES (bp)",
+                   options.xmax, options.ymax,
+                   options.outprefix + "_TES_dist_known.png")
 
     oprefix = options.outprefix
     plot_hires_bins(data, 'tss', oprefix)
@@ -209,7 +229,7 @@ data.loc[data['strand']=='-', ['TSS_dist', 'TES_dist']] *= -1
     # within a certain bp of the annotated TES
     # 3. what percentage of known transcripts have both? ( these can 
     # be from different reads )
-    calc_model_read_support(data, 100)
+    calc_model_read_support(data, 50)
 
 if __name__ == '__main__':
     main()
