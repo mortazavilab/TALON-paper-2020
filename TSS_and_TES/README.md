@@ -39,8 +39,8 @@ Found 8618 models with at least one read within 50 bp of the annotated TES, whic
 Found 6493 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 43.68% of known models
 ```
 
-<img align="center" width="400" src="GM12878_PacBio_tss_dists_hires_10_tpm.png">
-<img align="center" width="400" src="GM12878_PacBio_tes_dists_hires_10_tpm.png">
+<img align="center" width="400" src="GM12878_PacBio_tss_dists_hires_10_TPM.png">
+<img align="center" width="400" src="GM12878_PacBio_tes_dists_hires_10_TPM.png">
 
 # Plot distance of each read start (known transcripts only in PacBio) from closest CAGE peak
 1. Make a bed file of start sites
@@ -98,6 +98,6 @@ Found 6698 models with at least one read within 50 bp of the annotated TES, whic
 Found 4433 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 42.21% of known models
 ```
 
-<img align="center" width="400" src="GM12878_ONT_tss_dists_hires_10_tpm.png">
-<img align="center" width="400" src="GM12878_ONT_tes_dists_hires_10_tpm.png">
+<img align="center" width="400" src="GM12878_ONT_tss_dists_hires_10_TPM.png">
+<img align="center" width="400" src="GM12878_ONT_tes_dists_hires_10_TPM.png">
 
