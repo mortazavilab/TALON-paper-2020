@@ -77,7 +77,18 @@ def plot_histogram(data, xvar, label, xmax, ymax, fname):
 #         bbox_inches='tight')
 #     plt.clf()
 
-def plot_hires_bins(df, end_type, oprefix):
+def plot_hires_bins(df, end_type, total_reads, oprefix):
+
+    # get only the genes that are expressed above 10 TPM
+    g_df = df[['gene_ID', 'annot_transcript_id']].groupby('gene_ID',
+        as_index=False).count()
+    g_df.rename({'annot_transcript_id': 'counts'}, axis=1, inplace=True)
+    g_df['tpm'] = (g_df.counts/total_reads)*1000000
+    g_df = g_df.loc[g_df.tpm >= 10]
+    df = df.loc[df.gene_ID.isin(g_df.gene_ID.tolist())]
+
+    calc_model_read_support(df, 50)
+
     # diff_col = '{}_diff'.format(end_type)
     diff_col = '{}_dist'.format(end_type.upper())
     hires_bin_col = '{}_hires_bin'.format(end_type)
@@ -135,7 +146,7 @@ def plot_hires_bins(df, end_type, oprefix):
     ax.set(ylabel='Percentage of known transcript models with a read with {} in bin range'.format(end_type.upper()))
     ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
     ax.set(ylim=(0,50))
-    fname = '{}_{}_dists_hires.png'.format(oprefix, end_type)
+    fname = '{}_{}_dists_hires_10_TPM.png'.format(oprefix, end_type)
     print('Saving plot {}'.format(fname))
     plt.savefig(fname,
         bbox_inches='tight')
@@ -183,24 +194,27 @@ def main():
     data = pd.read_csv(infile, sep = '\t', header = 0)
     ref_sites = pd.read_csv(ref_sites, sep = '\t', header = 0)
 
-    # Limit to known transcripts
-    data = data.loc[data.transcript_novelty == "Known"]
-
-    # Remove chrM reads
-    data = data.loc[data.chrom != "chrM"]
-
     # Filter datasets (optional)
     if options.datasets != None:
         datasets = options.datasets.split(",")
         data = data[data['dataset'].isin(datasets)]
 
+    # get the total number of reads from these datasets
+    total_reads = len(data.index)
+
+    # Remove chrM reads
+    data = data.loc[data.chrom != "chrM"]
+
     # Remove spikes unless requested to keep
     if options.spikes == False:
          data = data[~data.chrom.str.contains("SIRV")]
-         data = data[~data.chrom.str.contains("ERCC")]     
+         data = data[~data.chrom.str.contains("ERCC")]  
+
+    # Limit to known transcripts
+    data = data.loc[data.transcript_novelty == "Known"]   
 
     # Merge together reads with GENCODE start data
-    data = data[["annot_transcript_id", "strand", "read_start", "read_end"]]
+    data = data[["gene_ID", "annot_transcript_id", "strand", "read_start", "read_end"]]
     data = pd.merge(data, ref_sites, on = "annot_transcript_id", 
                     how = "left")
 
@@ -210,17 +224,17 @@ def main():
     data['TES_dist'] = data.read_end - data.TES_pos
     data.loc[data['strand']=='-', ['TSS_dist', 'TES_dist']] *= -1
 
-    # Plot
-    plot_histogram(data, "TSS_dist", "Distance from annotated TSS (bp)", 
-                   options.xmax, options.ymax, 
-                   options.outprefix + "_TSS_dist_known.png")
-    plot_histogram(data, "TES_dist", "Distance from annotated TES (bp)",
-                   options.xmax, options.ymax,
-                   options.outprefix + "_TES_dist_known.png")
+    # # Plot
+    # plot_histogram(data, "TSS_dist", "Distance from annotated TSS (bp)", 
+    #                options.xmax, options.ymax, 
+    #                options.outprefix + "_TSS_dist_known.png")
+    # plot_histogram(data, "TES_dist", "Distance from annotated TES (bp)",
+    #                options.xmax, options.ymax,
+    #                options.outprefix + "_TES_dist_known.png")
 
     oprefix = options.outprefix
-    plot_hires_bins(data, 'tss', oprefix)
-    plot_hires_bins(data, 'tes', oprefix)
+    plot_hires_bins(data, 'tss', total_reads, oprefix)
+    plot_hires_bins(data, 'tes', total_reads, oprefix)
 
     # now we want to see 
     # 1. what percentage of known transcripts have a read that falls
@@ -229,7 +243,7 @@ def main():
     # within a certain bp of the annotated TES
     # 3. what percentage of known transcripts have both? ( these can 
     # be from different reads )
-    calc_model_read_support(data, 50)
+    # calc_model_read_support(data, 50)
 
 if __name__ == '__main__':
     main()

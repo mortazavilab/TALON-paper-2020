@@ -31,6 +31,17 @@ Found 13876 models with at least one read within 50 bp of the annotated TES, whi
 Found 9457 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 35.26% of known models
 ```
 
+If we constrain this to only include transcript models that correspond to genes that are expressed above 10 TPM:
+
+```
+Found 11033 models with at least one read within 50 bp of the annotated TSS, which is 74.22% of known models
+Found 8618 models with at least one read within 50 bp of the annotated TES, which is 57.98% of known models
+Found 6493 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 43.68% of known models
+```
+
+<img align="center" width="400" src="GM12878_PacBio_tss_dists_hires_10_tpm.png">
+<img align="center" width="400" src="GM12878_PacBio_tes_dists_hires_10_tpm.png">
+
 # Plot distance of each read start (known transcripts only in PacBio) from closest CAGE peak
 1. Make a bed file of start sites
 ```bash
@@ -62,7 +73,7 @@ python plot_TSS_and_TES_annot_dists.py \
     --ref gencode.v29.SIRV.ERCC.TSS_and_TES.tsv \
     --datasets ONT_GM12878_R1,ONT_GM12878_R2 \
     --xmax 800 \
-    --ymax 750000 \
+    --ymax 250000 \
     --o GM12878_ONT
 ```
 
@@ -78,3 +89,15 @@ Found 13680 models with at least one read within 50 bp of the annotated TSS, whi
 Found 13742 models with at least one read within 50 bp of the annotated TES, which is 58.45% of known models
 Found 8299 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 35.30% of known models
 ```
+
+If we constrain this to only include transcript models that correspond to genes that are expressed above 10 TPM:
+
+```
+Found 6891 models with at least one read within 50 bp of the annotated TSS, which is 65.61% of known models
+Found 6698 models with at least one read within 50 bp of the annotated TES, which is 63.77% of known models
+Found 4433 models with at least one read within 50 bp of the annotated TSS and with at least one read within 50 bp of the annotated TES, which is 42.21% of known models
+```
+
+<img align="center" width="400" src="GM12878_ONT_tss_dists_hires_10_tpm.png">
+<img align="center" width="400" src="GM12878_ONT_tes_dists_hires_10_tpm.png">
+
