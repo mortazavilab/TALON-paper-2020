@@ -14,7 +14,7 @@ def get_fields(fields):
     # are absent
     if 'gene_id' not in attributes:
         attributes['gene_id'] = 'NULL'
-    return attributes 
+    return attributes
 
 # get transcript id to gene id map
 ref_annot = '/data/users/freese/mortazavi_lab/ref/gencode.v29/gencode.v29.annotation.gtf'
@@ -46,7 +46,7 @@ def calc_tpm(df, r1, r2):
 	# r2 tpm
 	total_count = df[r2].sum()
 	df['{}_tpm'.format(r2)] = (df[r2]/total_count)*1000000
-	return df 
+	return df
 
 def calc_transcript_tpm(df, r1, r2):
 	df = df.copy(deep=True)
@@ -103,21 +103,26 @@ def compare_reps(control_headers, talon_t_df, talon_g_df, rep):
 	g_df = g_df.merge(talon_g_df, how='left', left_on='read_g', right_on='annot_gene_id').fillna(0)
 	control = g_df['tpm'].tolist()
 	talon = g_df['{}_tpm'.format(rep)].tolist()
-	g_corr, g_pval = stats.pearsonr(control, talon) 
+	g_corr, g_pval = stats.pearsonr(control, talon)
+    g_s_corr, g_s_pval = stats.spearmanr(control, talon)
 
 	# merge the genes and correlate transcripts
 	t_df = t_df.merge(talon_t_df, how='left', left_on='read_t', right_on='tid').fillna(0)
 	control = t_df['tpm'].tolist()
 	talon = t_df['{}_tpm'.format(rep)].tolist()
-	t_corr, t_pval = stats.pearsonr(control, talon) 
-	
+	t_corr, t_pval = stats.pearsonr(control, talon)
+    t_s_corr, t_s_pval = stats.spearmanr(control, talon)
+
 	# print stuff
-	print('Gene correlation: {}, gene pval: {}'.format(g_corr, g_pval))
-	print('Transcript correlation: {}, transcript pval: {}'.format(t_corr, t_pval))
+	print('Gene correlation (pearson): {}, gene pval: {}'.format(g_corr, g_pval))
+	print('Gene correlation (spearman): {}, gene pval: {}'.format(g_s_corr, g_s_pval))
+
+	print('Transcript correlation (pearson): {}, transcript pval: {}'.format(t_corr, t_pval))
+	print('Transcript correlation (spearman): {}, transcript pval: {}'.format(t_s_corr, t_s_pval))
+
 
 
 compare_reps(rep1, talon_t_df, talon_g_df, 'rep1')
 compare_reps(rep2, talon_t_df, talon_g_df, 'rep2')
 compare_reps(rep1_perf, talon_perf_t_df, talon_perf_g_df, 'rep1_perf')
 compare_reps(rep2_perf, talon_perf_t_df, talon_perf_g_df, 'rep2_perf')
-
