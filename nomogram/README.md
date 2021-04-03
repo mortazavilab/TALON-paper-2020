@@ -178,6 +178,9 @@ echo $bop > ont_talon/ont_talon_max_reads
 ```
 
 6. make the plots by running the code in `expression_boxplot.ipynb`
+
+<!--
+ ```bash
 # python plot_subsampled_abundances.py \
 # 	-dir pb_talon/ \
 # 	--prefix pb_talon/pb_known \
@@ -199,6 +202,8 @@ echo $bop > ont_talon/ont_talon_max_reads
 # 	--prefix ont_talon/ont \
 # 	--filter talon \
 # 	--max_reads ont_talon/ont_talon_max_reads
+```
+-->
 
 PacBio Gene Expression (Known filter)
 
