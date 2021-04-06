@@ -208,10 +208,14 @@ echo $bop > ont_talon/ont_talon_max_reads
 PacBio Gene Expression (Known filter)
 
 <img align="center" width="400" src="figures/pacbio_known_gene_violin.png">
+<img align="center" width="400" src="figures/pacbio_known_gene_1000000_violin.png">
+
 
 PacBio Transcript Expression (Known filter)
 
 <img align="center" width="400" src="figures/pacbio_known_transcript_violin.png">
+<img align="center" width="400" src="figures/pacbio_known_transcript_1000000_violin.png">
+
 
 <!-- PacBio Gene Expression (TALON filter; only known, NIC, NNC models)
 
@@ -225,10 +229,14 @@ PacBio Transcript Expression (TALON filter; only known, NIC, NNC models)
 ONT Gene Expression (Known filter)
 
 <img align="center" width="400" src="figures/ont_known_gene_violin.png">
+<img align="center" width="400" src="figures/ont_known_gene_1000000_violin.png">
+
 
 ONT Transcript Expression (Known filter)
 
 <img align="center" width="400" src="figures/ont_known_transcript_violin.png">
+<img align="center" width="400" src="figures/ont_known_transcript_1000000_violin.png">
+
 
 <!-- ONT Gene Expression (TALON filter; only known, NIC, NNC models)
 
