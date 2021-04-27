@@ -62,6 +62,19 @@ grep SIRV pb_talon.gtf > pb_sirv_talon.gtf
 grep gSpikein_ERCC pb_talon.gtf > pb_ercc_talon.gtf
 mv pb_talon_no_sirv_no_ercc.gtf pb_talon.gtf
 
+
+# use the talon_longest_ends module to assign transcript starts and ends
+gtf=pb_talon.gtf
+annot=GM12878_talon_read_annot.tsv
+datasets=pb_datasets
+talon_longest_end \
+    -gtf $gtf \
+    -read_annot $annot \
+    --datasets $datasets \
+    --mode both \
+    --novelty all \
+    -o pb_talon
+
 ## ONT ##
 
 printf "ONT_GM12878_R1\nONT_GM12878_R2" > ont_datasets
@@ -118,6 +131,18 @@ grep -v 'SIRV\|gSpikein_ERCC' ont_talon.gtf > ont_talon_no_sirv_no_ercc.gtf
 grep SIRV ont_talon.gtf > ont_sirv_talon.gtf
 grep gSpikein_ERCC ont_talon.gtf > ont_ercc_talon.gtf
 mv ont_talon_no_sirv_no_ercc.gtf ont_talon.gtf
+
+# use the talon_longest_ends module to assign transcript starts and ends
+gtf=ont_talon.gtf
+annot=GM12878_talon_read_annot.tsv
+datasets=pb_datasets
+talon_longest_end \
+    -gtf $gtf \
+    -read_annot $annot \
+    --datasets $datasets \
+    --mode both \
+    --novelty all \
+    -o pb_talon
 
 ## PACBIO + ONT ##
 
