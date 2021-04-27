@@ -15,7 +15,7 @@ GENOME=../refs/hg38_SIRV/hg38_SIRV.fa
 ```
 GTF files are available as supplementary tables of the TALON paper.  
 To obtain FANTOM5 CAGE data, please see instructions [here](https://github.com/dewyman/TALON-paper-2020/blob/master/CAGE_data).  
-To obtain ENCODE RNA-PET data, please see instructions [here](https://github.com/dewyman/TALON-paper-2020/tree/master/RNA-PET).  
+To obtain ENCODE RNA-PET data, please see instructions [here](https://github.com/dewyman/TALON-paper-2020/tree/master/RNA-PET_data).  
 
 Software versions:  
 * Python 3.7.2
