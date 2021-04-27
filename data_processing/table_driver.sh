@@ -142,7 +142,7 @@ talon_longest_end \
     --datasets $datasets \
     --mode both \
     --novelty all \
-    -o pb_talon
+    -o ont_talon
 
 ## PACBIO + ONT ##
 
