@@ -4,8 +4,8 @@ We downloaded release 2.6 from https://github.com/bcgsc/NanoSim.git.
 
 Format our Illumina expression data like the input for NanoSim
 ```bash
-r1=/dfs3/pub/freese/mortazavi_lab/bin/TALON-paper-2020/Illumina/GM12878/Kallisto/Rep1/abundance.tsv
-r2=/dfs3/pub/freese/mortazavi_lab/bin/TALON-paper-2020/Illumina/GM12878/Kallisto/Rep2/abundance.tsv
+r1=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/Illumina/GM12878/Kallisto/Rep1/abundance.tsv
+r2=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/Illumina/GM12878/Kallisto/Rep2/abundance.tsv
 python create_nanosim_expression.py \
 	-r1 $r1 \
 	-r2 $r2 
@@ -605,26 +605,93 @@ grep \> $r1_perf > rep1_perf/rep1_perf_headers.fasta
 grep \> $r2_perf > rep2_perf/rep2_perf_headers.fasta
 ```
 
-Get quantification correlations
+<!-- Get quantification correlations
 ```bash
 python compare_quantification.py 
-```
+``` -->
 
+Get quantification correlations
+```bash
+adir=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/compare_technologies/
+gtf=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/refs/gencode.v29.SIRV.ERCC.annotation.gtf
+
+g_ab_norm=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/talon/talon_abundance.tsv
+t_ab_norm=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/talon/talon_abundance_filtered.tsv
+r1=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep1/rep1_headers.fasta
+r2=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep2/rep2_headers.fasta
+python ${adir}compare_quantification.py \
+	-sim_files ${r1},${r2} \
+	-sim_name normal \
+	-t_ab $t_ab_norm \
+	-g_ab $g_ab_norm \
+	-tech_name FLAIR \
+	-ref_gtf $gtf \
+	-datasets 'rep1,rep2'
+
+g_ab_perf=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/talon/perf_talon_abundance.tsv
+t_ab_perf=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/talon/perf_talon_abundance_filtered.tsv
+r1_perf=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep1_perf/rep1_perf_headers.fasta
+r2_perf=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep2_perf/rep2_perf_headers.fasta
+python ${adir}compare_quantification.py \
+	-sim_files ${r1_perf},${r2_perf} \
+	-sim_name perfect \
+	-t_ab $t_ab_perf \
+	-g_ab $g_ab_perf \
+	-tech_name FLAIR \
+	-ref_gtf $gtf \
+	-datasets 'rep1_perf,rep2_perf'
 ```
 rep1
-Gene correlation: 0.9752182655068521, gene pval: 0.0
-Transcript correlation: 0.839616947752433, transcript pval: 0.0
+Gene correlation (pearson): 0.9752182655068521, gene pval: 0.0
+Gene correlation (spearman): 0.6648614265504476, gene pval: 0.0
+Transcript correlation (pearson): 0.839616947752433, transcript pval: 0.0
+Transcript correlation (spearman): 0.3518671049135242, transcript pval: 0.0
 
 rep2
-Gene correlation: 0.9793314342913847, gene pval: 0.0
-Transcript correlation: 0.7571022861073621, transcript pval: 0.0
+Gene correlation (pearson): 0.9793314342913847, gene pval: 0.0
+Gene correlation (spearman): 0.6695318823007524, gene pval: 0.0
+Transcript correlation (pearson): 0.7571022861073621, transcript pval: 0.0
+Transcript correlation (spearman): 0.35506888313342505, transcript pval: 0.0
 
 rep1_perf
-Gene correlation: 0.9942027438596236, gene pval: 0.0
-Transcript correlation: 0.9475228329665103, transcript pval: 0.0
+Gene correlation (pearson): 0.9942027438596236, gene pval: 0.0
+Gene correlation (spearman): 0.9548090256196919, gene pval: 0.0
+Transcript correlation (pearson): 0.9475228329665103, transcript pval: 0.0
+Transcript correlation (spearman): 0.29926992418624987, transcript pval: 0.0
 
 rep2_perf
-Gene correlation: 0.9929908876334156, gene pval: 0.0
-Transcript correlation: 0.9367575707601811, transcript pval: 0.0
+Gene correlation (pearson): 0.9929908876334156, gene pval: 0.0
+Gene correlation (spearman): 0.9533881185205776, gene pval: 0.0
+Transcript correlation (pearson): 0.9367575707601811, transcript pval: 0.0
+Transcript correlation (spearman): 0.2927992186712084, transcript pval: 0.0
+
 ```
+
+
+```bash
+adir=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/compare_technologies/
+
+r1=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep1/rep1_headers.fasta
+r2=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep2/rep2_headers.fasta
+python ${adir}compare_isoform_detection.py \
+	-sim_files ${r1},${r2} \
+	-sim_name normal \
+	-ab talon/talon_abundance_filtered.tsv \
+	-tech_name TALON \
+	-datasets rep1,rep2
+
+r1_perf=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep1_perf/rep1_perf_headers.fasta
+r2_perf=/dfs6/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/rep2_perf/rep2_perf_headers.fasta
+python ${adir}compare_isoform_detection.py \
+	-sim_files ${r1},${r2} \
+	-sim_name perfect \
+	-ab talon/perf_talon_abundance_filtered.tsv \
+	-tech_name TALON \
+	-datasets rep1_perf,rep2_perf
+```
+
+
+
+
+We also wanted to analyze how TALON performed on the simulations compared to the other pipelines we previously ran on the SIRV data. You can view this analysis in the [compare_technologies](https://github.com/mortazavilab/TALON-paper-2020/tree/master/simulations/compare_technologies/) directory.
 

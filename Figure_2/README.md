@@ -2,7 +2,7 @@
 A step-by-step description of how we generated the panels of Figure 2 in the TALON manuscript
 
 First, some filepaths:
-```
+```bash
 PLOTPATH=../plotting_scripts
 abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_talon_abundance.tsv
 filt_abundance=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_talon_abundance_filtered.tsv
@@ -14,7 +14,7 @@ Software versions:
 * edgeR v3.28.1 
 
 ## Panel A: Expression level of known genes (GENCODE v29) in each biological replicate of GM12878
-```
+```bash
 Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
           --f ${abundance} \
           --color blue \
@@ -30,7 +30,7 @@ Rscript ${PLOTPATH}/plot_longread_gene_expression_corr.R \
 Pearson and Spearman correlations are recorded in plots/PB_GM12878_R1-PB_GM12878_R2_gene_correlations.txt.
 
 ## Panel B: Proportion of genes expressed in Illumina RNA-seq data of GM12878 that are also detected in the PacBio GM12878 data, binned by Illumina expression level
-```
+```bash
 Rscript ${PLOTPATH}/plot_detection_by_TPM_for_datasets.R \
          --f ${abundance} \
          --datasets PB_GM12878_R1,PB_GM12878_R2 \
@@ -43,7 +43,7 @@ Rscript ${PLOTPATH}/plot_detection_by_TPM_for_datasets.R \
 <img align="center" width="400" src="plots/gene_detection_by_TPM.png">	
 
 ## Panel C: Comparison of gene expression levels for known genes in the PacBio and Illumina RNA-seq platforms (GM12878)
-```
+```bash
 Rscript ${PLOTPATH}/longread_v_illumina_gene_counts_edgeR.R \
          --f ${abundance} \
          --datasets PB_GM12878_R1,PB_GM12878_R2 \
@@ -57,7 +57,7 @@ Rscript ${PLOTPATH}/longread_v_illumina_gene_counts_edgeR.R \
 <img align="center" width="400" src="plots/edgeR_PacBio_illumina_gene_counts_MA_plot.png">
 
 ## Panel D: Number of distinct transcript isoforms observed in each novelty category (GM12878)
-```
+```bash
 Rscript ${PLOTPATH}/plot_novelty_categories_distinct_isoforms.R \
          --f ${filt_abundance} \
          --datasets PB_GM12878_R1,PB_GM12878_R2 \
@@ -66,7 +66,7 @@ Rscript ${PLOTPATH}/plot_novelty_categories_distinct_isoforms.R \
 <img align="center" width="400" src="plots/PB_GM12878_R1-PB_GM12878_R2_distinct_isoforms_by_category.png">
 
 ## Panel E: Expression level of known transcript models in each biological replicate of GM12878
-```
+```bash
 Rscript ${PLOTPATH}/plot_longread_transcript_expression_corr.R \
          --f ${filt_abundance} \
          --d1 PB_GM12878_R1 \

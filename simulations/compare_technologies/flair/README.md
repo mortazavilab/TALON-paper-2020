@@ -95,6 +95,27 @@ python ${adir}compare_isoform_detection.py \
 	-datasets perf_r1_perf_batch1,perf_r2_perf_batch1
 ```
 
+```
+# Normal 
+Simulated dataset: normal, norm_r1_norm_batch1, Technology: FLAIR
+Detected 15,041 out of 174,852 known isoforms
+Detected 14,057 novel isoforms
+
+Simulated dataset: normal, norm_r2_norm_batch1, Technology: FLAIR
+Detected 15,087 out of 174,337 known isoforms
+Detected 13,985 novel isoforms
+
+# Perfect
+Simulated dataset: perfect, perf_r1_perf_batch1, Technology: FLAIR
+Detected 14,817 out of 174,852 known isoforms
+Detected 18,789 novel isoforms
+
+Simulated dataset: perfect, perf_r2_perf_batch1, Technology: FLAIR
+Detected 14,785 out of 174,337 known isoforms
+Detected 18,850 novel isoforms
+```
+
+
 6. Performance of FLAIR on transcript and gene level quantification
 ```bash
 adir=/dfs3/pub/freese/mortazavi_lab/bin/TALON-paper-2020/simulations/compare_technologies/

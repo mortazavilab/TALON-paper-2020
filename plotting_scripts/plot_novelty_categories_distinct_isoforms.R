@@ -14,6 +14,7 @@ main <-function() {
 
     # Filter the results to limit them to selected datasets
     datasets <- unlist(strsplit(datasets, ","))
+    print(head(abundance_table))
     print(datasets)
     abundance_table <- abundance_table[,c("transcript_novelty", datasets)]
     

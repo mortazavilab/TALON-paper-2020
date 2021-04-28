@@ -104,14 +104,14 @@ def compare_reps(control_headers, talon_t_df, talon_g_df, rep):
 	control = g_df['tpm'].tolist()
 	talon = g_df['{}_tpm'.format(rep)].tolist()
 	g_corr, g_pval = stats.pearsonr(control, talon)
-    g_s_corr, g_s_pval = stats.spearmanr(control, talon)
+	g_s_corr, g_s_pval = stats.spearmanr(control, talon)
 
 	# merge the genes and correlate transcripts
 	t_df = t_df.merge(talon_t_df, how='left', left_on='read_t', right_on='tid').fillna(0)
 	control = t_df['tpm'].tolist()
 	talon = t_df['{}_tpm'.format(rep)].tolist()
 	t_corr, t_pval = stats.pearsonr(control, talon)
-    t_s_corr, t_s_pval = stats.spearmanr(control, talon)
+	t_s_corr, t_s_pval = stats.spearmanr(control, talon)
 
 	# print stuff
 	print('Gene correlation (pearson): {}, gene pval: {}'.format(g_corr, g_pval))

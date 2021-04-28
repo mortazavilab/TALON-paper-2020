@@ -92,6 +92,39 @@ StringTie2 found 5 novel SIRV isoforms
 
 Good job, StringTie!
 
+2.5. Um so StringTie acutally includes everything from the reference annotation provided in the --merge step even though we added a coverage filter so we'll just not include that.
+
+```bash
+printf "r1_stringtie.gtf\nr2_stringtie.gtf" > stringtie_gtfs.tsv
+
+gtf_list=stringtie_gtfs.tsv
+sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/
+
+${sdir}./stringtie \
+	--merge \
+	-p 16 \
+	-c 1 \
+	-o merged_stringtie_no_ref.gtf \
+	-l st_novel_ \
+	$gtf_list
+```
+
+2.75. Try this without the coverage filter
+
+```bash
+printf "r1_stringtie.gtf\nr2_stringtie.gtf" > stringtie_gtfs.tsv
+
+gtf_list=stringtie_gtfs.tsv
+sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/
+
+${sdir}./stringtie \
+	--merge \
+	-p 16 \
+	-c 1 \
+	-o merged_stringtie_no_ref_no_c.gtf \
+	-l st_novel_ \
+	$gtf_list
+```
 3. Rerun each of the replicates using the merged GTF as the reference annotation. This will ensure concordance of novel transcript ids across the datasets as well as allow for us to quantify on each replicate. In this case, we will use the `-e` option, as StringTie has already found all the novel transcripts we needed to find, and therefore we only want to include models that have already been annotated by StringTie.
 ```bash
 sdir=/dfs3/pub/freese/mortazavi_lab/bin/stringtie-2.1.4.Linux_x86_64/

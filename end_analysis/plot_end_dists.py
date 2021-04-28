@@ -12,6 +12,10 @@ def get_args():
 		help='Ends from the reference annotation')
 	parser.add_argument('--datasets', dest='datasets',
 		help='CSV list of datasets to analyze', default=None)
+	parser.add_argument('-xlim', dest='xlim',
+		help='X limit to serve as boundary for all plot')
+	parser.add_argument('-ylim', dest='ylim',
+		help='Y limit for the all plot')
 	parser.add_argument('-o', dest='oprefix',
 		help='Output plot prefix')
 	args = parser.parse_args()
@@ -47,32 +51,48 @@ def plot_hires_bins(df, end_type, oprefix):
 		bbox_inches='tight')
 	plt.clf()
 
-def plot_all_bins(df, end_type, oprefix):
+# def plot_all_bins(df, end_type, oprefix):
+# 	diff_col = '{}_diff'.format(end_type)
+# 	bin_col = '{}_bin'.format(end_type)
+# 	perc_col = 'perc_{}'.format(end_type)
+
+# 	total = len(df.index)
+# 	bins = [i for i in range(-500,0,50)]
+# 	bins += [-1, 0, 1]
+# 	bins += [i for i in range(50,550,50)]
+# 	bins += [df[diff_col].max()]
+# 	bins = [df[diff_col].min()] + bins
+
+# 	df[bin_col] = pd.cut(df[diff_col], bins=bins)
+# 	bin_df = df[[bin_col, diff_col]].groupby(bin_col).count()
+# 	bin_df.rename({diff_col: 'counts'}, axis=1, inplace=True)
+# 	bin_df.reset_index(inplace=True)
+# 	bin_df[perc_col] = (bin_df.counts/total)*100
+# 	bin_df.counts.fillna(0, inplace=True)
+# 	bin_df[perc_col].fillna(0, inplace=True)
+
+# 	ax = sns.barplot(x=bin_col, y=perc_col,
+# 			data=bin_df, color='#009E73', saturation=1)
+# 	ax.set(xlabel='Distance from annotated {} (bp)'.format(end_type.upper()))
+# 	ax.set(ylabel='Percentage of Known Reads')
+# 	ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+# 	ax.set(ylim=(0,100))
+# 	fname = '{}_{}_dists.png'.format(oprefix, end_type)
+# 	print('Saving plot {}'.format(fname))
+# 	plt.savefig(fname,
+# 		bbox_inches='tight')
+# 	plt.clf()
+
+def plot_all_bins(df, end_type, xlim, ylim, oprefix):
 	diff_col = '{}_diff'.format(end_type)
-	bin_col = '{}_bin'.format(end_type)
-	perc_col = 'perc_{}'.format(end_type)
 
-	total = len(df.index)
-	bins = [i for i in range(-500,0,50)]
-	bins += [-1, 0, 1]
-	bins += [i for i in range(50,550,50)]
-	bins += [df[diff_col].max()]
-	bins = [df[diff_col].min()] + bins
-
-	df[bin_col] = pd.cut(df[diff_col], bins=bins)
-	bin_df = df[[bin_col, diff_col]].groupby(bin_col).count()
-	bin_df.rename({diff_col: 'counts'}, axis=1, inplace=True)
-	bin_df.reset_index(inplace=True)
-	bin_df[perc_col] = (bin_df.counts/total)*100
-	bin_df.counts.fillna(0, inplace=True)
-	bin_df[perc_col].fillna(0, inplace=True)
-
-	ax = sns.barplot(x=bin_col, y=perc_col,
-			data=bin_df, color='#009E73', saturation=1)
+	bins = [i for i in range(-1*xlim,xlim+1)]
+	ax = sns.distplot(df[diff_col], kde=False, bins=bins,
+		color='#009E73')
 	ax.set(xlabel='Distance from annotated {} (bp)'.format(end_type.upper()))
-	ax.set(ylabel='Percentage of Known Reads')
-	ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
-	ax.set(ylim=(0,100))
+	ax.set(ylabel='Number of reads')
+	ax.set(xlim=(-1*xlim,xlim))
+	# ax.set(ylim=(0,ylim))
 	fname = '{}_{}_dists.png'.format(oprefix, end_type)
 	print('Saving plot {}'.format(fname))
 	plt.savefig(fname,
@@ -85,6 +105,8 @@ def main():
 	datasets = args.datasets
 	oprefix = args.oprefix
 	annot_ends = args.annot_ends
+	xlim = int(args.xlim)
+	ylim = int(args.ylim)
 
 	df = pd.read_csv(infile, sep='\t')
 
@@ -124,8 +146,9 @@ def main():
 	# plot de plot
 	plot_hires_bins(df, 'tss', oprefix)
 	plot_hires_bins(df, 'tes', oprefix)
-	plot_all_bins(df, 'tss', oprefix)
-	plot_all_bins(df, 'tes', oprefix)
+	plot_all_bins(df, 'tss', xlim, ylim, oprefix)
+	plot_all_bins(df, 'tes', xlim, ylim, oprefix)
 
 if __name__ == '__main__':
 	main()
+

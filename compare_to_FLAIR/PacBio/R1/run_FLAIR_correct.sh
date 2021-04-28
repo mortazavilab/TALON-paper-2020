@@ -1,24 +1,26 @@
 #!/bin/bash
-#$ -q sam
+#$ -q som,bio,free64
 #$ -pe one-node-mpi 16
 #$ -R y
-#$ -N PacBio_GM12878_1_flair_correct
-#$ -M dwyman@uci.edu
 #$ -m ea
 #$ -cwd
 #$ -j y
+#$ -o /data/users/freese/mortazavi_lab/qsub_output
+#$ -e /data/users/freese/mortazavi_lab/qsub_output
+#$ -ckpt restart
+#$ -N sirv_1_correct
 
-source activate FLAIR
 module load bedtools
+module load samtools 
+cd /data/users/freese/mortazavi_lab/bin/TALON-paper-2020/compare_to_FLAIR/SIRV/r1/
 
-gtf=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/refs/gencode.v29.SIRV.ERCC.annotation.gtf
+gtf=/data/users/freese/mortazavi_lab/bin/TALON-paper-2020/compare_to_FLAIR/SIRV/sirv.gtf
 query=flair.aligned.bed
-chromSizes=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/refs/hg38_SIRV/hg38_SIRV.chromSizes
-genome=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/refs/hg38_SIRV/hg38_SIRV.fa
+chromSizes=/data/users/freese/mortazavi_lab/bin/TALON-paper-2020/compare_to_FLAIR/SIRV/sirv_chrom_sizes.tsv
+genome=/data/users/freese/mortazavi_lab/bin/TALON-paper-2020/compare_to_FLAIR/SIRV/sirv.fa
 
-python ~/flair/flair.py correct -f $gtf \
+python ~/mortazavi_lab/bin/flair/flair.py correct -f $gtf \
                               -q $query \
-                              -t 16 \
+                              -t 4 \
                               -c $chromSizes \
                               -g $genome
-

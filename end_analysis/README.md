@@ -17,6 +17,8 @@ python plot_end_dists.py \
 	-f  $read_annot \
 	-a  $annot_ends \
 	--datasets 'PB_GM12878_R1,PB_GM12878_R2' \
+	-xlim 800 \
+	-ylim 90000 \
 	-o 'pb'
 ```
 
@@ -33,6 +35,8 @@ python plot_end_dists.py \
 	-f  $read_annot \
 	-a $annot_ends \
 	--datasets 'ONT_GM12878_R1,ONT_GM12878_R2' \
+	-xlim 800 \
+	-ylim 50000 \
 	-o 'ont'
 ```
 
