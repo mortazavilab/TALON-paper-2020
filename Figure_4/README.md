@@ -7,16 +7,15 @@ OUTPLOTS=plots
 mkdir -p ${OUTPLOTS}
 
 data_dir=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON
-PB_GTF=$data_dir/pb_talon_revised_both.gtf
-ONT_GTF=$data_dir/ont_talon_revised_both.gtf
+PB_GTF=$data_dir/pb_talon.gtf
+ONT_GTF=$data_dir/ont_talon.gtf
 CAGE=../CAGE_data/FANTOM5/hg38_CAGE.bed
 RNAPET=../RNA-PET_data/data/GM12878_hg38.bed
-% GENOME=../refs/hg38_SIRV/hg38_SIRV.fa
-GENOME=~/mortazavi_lab/ref/hg38/hg38_SIRV.fa
+GENOME=../refs/hg38_SIRV/hg38_SIRV.fa
 ```
 GTF files are available as supplementary tables of the TALON paper.  
 To obtain FANTOM5 CAGE data, please see instructions [here](https://github.com/dewyman/TALON-paper-2020/blob/master/CAGE_data).  
-To obtain ENCODE RNA-PET data, please see instructions [here](https://github.com/dewyman/TALON-paper-2020/tree/master/RNA-PET).  
+To obtain ENCODE RNA-PET data, please see instructions [here](https://github.com/dewyman/TALON-paper-2020/tree/master/RNA-PET_data).  
 
 Software versions:  
 * Python 3.7.2
@@ -26,6 +25,7 @@ Software versions:
 
 ## Panel A: Percentage of TALON transcript models with CAGE support for their 5' end by novelty category (GM12878 PacBio)
 ```bash
+source activate mypython3.7.2
 OUT=CAGE/PacBio_GM12878
 mkdir -p ${OUT}
 python run_CAGE_analysis.py \
@@ -39,7 +39,7 @@ Rscript ${PLOTPATH}/plot_support_by_novelty_type.R \
     --t CAGE \
     --novelty ${OUT}/transcript_beds/GM12878_novelty.csv \
     --splitISM \
-    --ymax 31000 \
+    --ymax 31000 \ 
     -o ${OUTPLOTS}/GM12878_PacBio
 ```
 <img align="center" width="400" src="plots/GM12878_PacBio_CAGE_support.png">
