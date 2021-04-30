@@ -33,8 +33,9 @@ def gen_summary_table(df):
 	               'gencode_sj_support': 'illumina_count'},
 	                inplace=True, axis=1)
 	ill_sup = ill_sup[ill_sup.support != False]
-	ill_sup['percent_illumina'] = ill_sup.apply(lambda x: 
-	        (x.illumina_count/x.total)*100, axis=1)
+	print(ill_sup.columns)
+	print(ill_sup.head())
+	ill_sup['percent_illumina'] = (ill_sup['illumina_count']/ill_sup['total'])*100
 	ill_sup.drop('support', inplace=True, axis=1)
 
 	gc_sup = df.groupby(['novelty','gencode_sj_support']).count()

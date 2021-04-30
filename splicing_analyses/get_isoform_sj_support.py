@@ -26,9 +26,17 @@ def read_sj_file(infile):
 	df = pd.read_csv(infile, sep='\t',
 		 names=['chrom', 'start', 'stop', 'strand'],
 		 usecols=[0,1,2,3])
-	df['id'] = df.apply(
-		lambda x: '_'.join([str(i) for i in [x.chrom, x.start, x.stop, x.strand]]),
-		axis = 1)
+	print(df.head())
+	df['chrom'] = df.chrom.astype(str)
+	df['start'] = df.start.astype(str)
+	df['stop'] = df.stop.astype(str)
+	df['strand'] = df.strand.astype(str)
+# 	df['id'] = df['chrom'].astype(str)+'_'+df['start'].astype(str)+'_'+df['stop'].astype(str)+df['strand'].astype(str)
+	df['id'] = df['chrom']+'_'+df['start']+'_'+df['stop']+'_'+df['strand']
+	print(df.head())
+# 	return
+# 		lambda x: '_'.join([str(i) for i in [x.chrom, x.start, x.stop, x.strand]]),
+# 		axis = 1)
 	df.drop(['chrom', 'start', 'stop', 'strand'], inplace=True, axis=1)
 
 	return df
@@ -104,8 +112,12 @@ def get_sj(entry, prev_exon_end, minIntron=21):
 	
 	return "_".join([chromosome, str(intron_start), str(intron_end), strand])
 
-def determine_sj_support(g, df, ref_df, gc_df):
+def determine_sj_support(g, df, ref_df, gc_df, sample_name):
 
+	bad_sjs = '{}_sj_tid_support.tsv'.format(sample_name)
+	ofile = open(bad_sjs, 'w')
+	ofile.write('tid\tsj_id\tillumina_support\tgencode_support\n')
+	
 	with open(g, 'r') as infile:
 
 		# loop through gtf
@@ -113,7 +125,12 @@ def determine_sj_support(g, df, ref_df, gc_df):
 		prev_exon_end = 0
 		n_exons = 0
 
+		line_num = 0
 		for line in infile: 
+			if line_num % 1000 == 0:
+				print('Processed {} lines'.format(line_num))
+			line_num += 1
+			
 			line = line.strip().split('\t')
 
 			if line[2] != 'exon': continue
@@ -160,16 +177,29 @@ def determine_sj_support(g, df, ref_df, gc_df):
 				else:
 					prev_exon_end = line[3] 
 
+				entry = '{}\t{}\t'.format(tid, sj)
 				if sj not in ref_df.id.values.tolist():
 					df.loc[df.transcript_id == tid, 'illumina_sj_support'] = False
+					entry += 'False\t'
+				else:
+					entry += 'True\t'
 				if sj not in gc_df.id.values.tolist():
 					# print('culprit exon not found in gc~')
 					df.loc[df.transcript_id == tid, 'gencode_sj_support'] = False
+					entry += 'False\n'
+				else:
+					entry += 'True\n'
+				ofile.write(entry)
+					
+# 				if sj == 'chr1_185351_185490_2':
+# 					ref_df.to_csv('test.tsv', sep='\t')
+# 					return
 
 			# print()
 		# clean up if the last entry is monoexonic
 		if n_exons == 1: 
 				df = df[df.transcript_id != prev_tid]
+		ofile.close()
 	
 		return df
 
@@ -194,7 +224,7 @@ def main():
 	# print(df.novelty.unique())
 
 	print('Determining sj support for each transcript....')
-	df = determine_sj_support(args.gtf, df, ill_df, gc_df) 
+	df = determine_sj_support(args.gtf, df, ill_df, gc_df, args.sample_name) 
 
 	df.to_csv('{}_isoform_sj_support.csv'.format(args.sample_name),
 			  index=False)

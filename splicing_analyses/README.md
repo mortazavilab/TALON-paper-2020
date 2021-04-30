@@ -175,3 +175,56 @@ python compare_sjs_venn_new.py \
 ```
 
 <img align="center" width="250" src="figures/PacBio_GM12878_gc_venn2.png"> <img align="center" width="250" src="figures/Novel_GM12878_venn.png"> <img align="center" width="250" src="figures/Known_GM12878_venn.png">
+
+# Illumina/GENCODE splice junction support for whole transcripts 
+ What proportion of TALON transcripts have all of their splice junctions supported by Illumina splice junctions or from GENCODE splice junctions?
+ 
+## Test
+```bash
+gtf=pb_talon.gtf
+python get_isoform_sj_support.py \
+	-gtf ${gtf} \
+	-ref_sj_1 GM12878_alignedSJ.out_novelty.tab \
+	-ref_sj_2 gencode_v29_sjs.tab \
+	-sample test
+```
+ 
+## PacBio
+```bash
+gtf=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/pb_talon.gtf
+gtf=pb_talon.gtf
+python get_isoform_sj_support.py \
+	-gtf ${gtf} \
+	-ref_sj_1 GM12878_alignedSJ.out_novelty.tab \
+	-ref_sj_2 gencode_v29_sjs.tab \
+	-sample pb_GM12878
+    
+python gen_isoform_support_table.py \
+	-csv pb_GM12878_isoform_sj_support.csv \
+	-sample pb_GM12878
+    
+python plot_isoform_sj_support_by_novelty.py \
+	-c pb_GM12878_isoform_sj_support_summary.csv \
+	-s "PacBio GM12878"
+```
+
+## ONT
+```bash
+gtf=/share/crsp/lab/seyedam/share/TALON_paper_data/revisions_1-20/human_TALON/ont_talon.gtf
+gtf=ont_talon.gtf
+python get_isoform_sj_support.py \
+	-gtf ${gtf} \
+	-ref_sj_1 GM12878_alignedSJ.out_novelty.tab \
+	-ref_sj_2 gencode_v29_sjs.tab \
+	-sample ont_GM12878
+
+python gen_isoform_support_table.py \
+	-csv ont_GM12878_isoform_sj_support.csv \
+	-sample ont_GM12878
+    
+python plot_isoform_sj_support_by_novelty.py \
+	-c ont_GM12878_isoform_sj_support_summary.csv \
+	-s "ONT GM12878"
+```
+
+### Analyze percent SJ support per novelty category in `isoform_support.ipynb`.
