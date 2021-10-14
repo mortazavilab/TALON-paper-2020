@@ -108,8 +108,6 @@ def main():
     if options.datasets != None:
         datasets = options.datasets.split(",")
         data = filter_by_datasets(data, datasets)
-    else:
-        datasets = set(list(data.dataset))
         
 
     # Remove SIRV/ERCCs
@@ -125,8 +123,12 @@ def main():
     # Sort the reads by novelty category?
 
     # Now plot the read length by novelty category
-    fname = options.outprefix + "_".join(datasets) + options.platform + \
-            "_read_len_by_novelty.png"
+    if datasets:
+        fname = options.outprefix + "_".join(datasets) + options.platform + \
+                "_read_len_by_novelty.png"
+    else:
+        fname = options.outprefix + options.platform + \
+                "_read_len_by_novelty.png"
     
     violin_plot(data, options.platform, fname)
 
