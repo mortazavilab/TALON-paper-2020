@@ -108,6 +108,9 @@ def main():
     if options.datasets != None:
         datasets = options.datasets.split(",")
         data = filter_by_datasets(data, datasets)
+    else:
+        datasets = set(list(data.dataset))
+        
 
     # Remove SIRV/ERCCs
     filter = data['chrom'].str.contains("ERCC")
